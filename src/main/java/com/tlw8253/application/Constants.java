@@ -17,7 +17,7 @@ package com.tlw8253.application;
 public interface Constants {
 
 	//Return status codes
-	int ciStatusCodeSuccess = 201;
+	int ciStatusCodeSuccess = 200;
 
 
 	//context parameters

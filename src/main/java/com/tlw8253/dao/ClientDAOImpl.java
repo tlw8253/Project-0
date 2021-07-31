@@ -11,10 +11,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.tlw8253.application.Constants;
+import com.tlw8253.dto.AddOrEditClientDTO;
 import com.tlw8253.model.Client;
-import com.tlw8253.utility.ConnectionUtility;
+import com.tlw8253.util.ConnectionUtility;
 
-public class ClientDAOImpl implements Constants {
+public class ClientDAOImpl implements Constants, ClientDAO {
 	private Logger objLogger = LoggerFactory.getLogger(ClientDAOImpl.class);
 
 	public ClientDAOImpl() {
@@ -58,5 +59,30 @@ public class ClientDAOImpl implements Constants {
 		
 		return lstClients;
 	}
+	
+	public Client getClientById(int iRecordId) throws SQLException{
+		Client objClient = new Client();
+		
+		return(objClient);
+		
+	}
 
+	public Client editClient(int iRecordId, AddOrEditClientDTO objClient) throws SQLException {
+		Client objClient = new Client();
+		
+		return(objClient);
+		
+	}
 }
+
+
+
+
+
+
+
+
+
+
+
+

@@ -15,7 +15,8 @@ public class Client {
 	private String sLastName = "";
 
 //	private List<Phone> listPhones;
-	
+//	private List<Accounts> listAcct;
+
 	
 	public Client() {
 		super();
@@ -23,9 +24,12 @@ public class Client {
 
 	public Client(int iRecordId, String sFirstName, String sLastName) {
 		super();
+		String sMethod = "Client(): ";
+		
 		this.iRecordId = iRecordId;
 		this.sFirstName = sFirstName;
 		this.sLastName = sLastName;
+		objLogger.debug(sMethod + "iRecordId: [" + iRecordId + "] sFirstName: [" + sFirstName);
 	}
 
 	//
@@ -55,6 +59,8 @@ public class Client {
 	}
 
 		
+	//
+	//###
 	@Override
 	public int hashCode() {
 		return Objects.hash(iRecordId, sFirstName, sLastName);

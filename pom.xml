@@ -124,14 +124,8 @@
 	</dependencies>
 
 
-	<!-- build instruction to use from Git Bash command line:
-			mvn test
-			mvn compile
-			mvn package
-			
-			to run the jar file
-			java -jar filename.jar
-	 -->
+	<!-- build instruction to use from Git Bash command line: mvn test mvn compile 
+		mvn package to run the jar file java -jar filename.jar -->
 	<build>
 		<plugins>
 			<plugin>
@@ -147,7 +141,7 @@
 							<archive>
 								<manifest>
 									<mainClass>
-										com.tlw8253.Application
+										com.tlw8253.app.Application
 									</mainClass>
 								</manifest>
 							</archive>

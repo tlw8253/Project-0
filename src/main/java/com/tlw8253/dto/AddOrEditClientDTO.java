@@ -1,27 +1,27 @@
 package com.tlw8253.dto;
 
 //DTO - Data Transfer Object
-public class ClientDTO {
+public class AddOrEditClientDTO {
 	private String sFirstName = "";
 	private String sLastName = "";
 
-	public ClientDTO() {
+	public AddOrEditClientDTO() {
 		super();
 	}
 
-	public String getsFirstName() {
+	public String getFirstName() {
 		return sFirstName;
 	}
 
-	public void setsFirstName(String sFirstName) {
+	public void setFirstName(String sFirstName) {
 		this.sFirstName = sFirstName;
 	}
 
-	public String getsLastName() {
+	public String getLastName() {
 		return sLastName;
 	}
 
-	public void setsLastName(String sLastName) {
+	public void setLastName(String sLastName) {
 		this.sLastName = sLastName;
 	}
 
