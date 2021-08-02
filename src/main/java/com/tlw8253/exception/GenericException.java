@@ -2,6 +2,11 @@ package com.tlw8253.exception;
 
 public class GenericException extends Exception {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public GenericException() {
 		// TODO Auto-generated constructor stub
 	}

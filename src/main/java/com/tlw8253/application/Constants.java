@@ -17,7 +17,7 @@ package com.tlw8253.application;
 public interface Constants {
 
 	//Return status codes
-	int ciStatusCodeSuccess = 201;
+	int ciStatusCodeSuccess = 200;
 
 
 	//context parameters
@@ -27,13 +27,17 @@ public interface Constants {
 	int ciMinNameLen = 5;
 	int ciListingPort = 3005;
 	
-	//database constants
-	String csDatabaseName = "project0";
-	String csClientTable = csDatabaseName + "." + "client";
-	String csPhoneTable = csDatabaseName + "." + "phone";
-	String csAccountTable = csDatabaseName + "." + "account";
+	//database constants 
+	String csDatabaseName = "project0";							//database name
+	//String csClientTable = "client";		//client table
+	String csClientTable = csDatabaseName + "." + "client";		//client table
+	String csPhoneTable = csDatabaseName + "." + "phone";		//phone table
+	String csAccountTable = csDatabaseName + "." + "account";	//account table
 	
-	
+	//client table constants
+	String csClientTblClientId = "client_id";
+	String csClientTblFirstName = "first_name";
+	String csClientTblLastName = "last_name";
 	
 	
 

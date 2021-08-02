@@ -10,11 +10,12 @@ import org.slf4j.LoggerFactory;
 public class Client {
 	private Logger objLogger = LoggerFactory.getLogger(Client.class);
 	
-	private int iRecordId = 0;
+	private int iClientId = 0;
 	private String sFirstName = "";
 	private String sLastName = "";
 
-//	private List<Phone> listPhones;
+//	private List<Phone> listPhones;		TBD
+//	private List<Account> listAccounts;	to be implemented
 	
 	
 	public Client() {
@@ -23,7 +24,7 @@ public class Client {
 
 	public Client(int iRecordId, String sFirstName, String sLastName) {
 		super();
-		this.iRecordId = iRecordId;
+		this.iClientId = iRecordId;
 		this.sFirstName = sFirstName;
 		this.sLastName = sLastName;
 	}
@@ -31,11 +32,11 @@ public class Client {
 	//
 	//### getters & setters
 	public int getiRecordId() {
-		return iRecordId;
+		return iClientId;
 	}
 
 	public void setiRecordId(int iRecordId) {
-		this.iRecordId = iRecordId;
+		this.iClientId = iRecordId;
 	}
 
 	public String getsFirstName() {
@@ -57,7 +58,7 @@ public class Client {
 		
 	@Override
 	public int hashCode() {
-		return Objects.hash(iRecordId, sFirstName, sLastName);
+		return Objects.hash(iClientId, sFirstName, sLastName);
 	}
 
 	@Override
@@ -69,13 +70,16 @@ public class Client {
 		if (getClass() != obj.getClass())
 			return false;
 		Client other = (Client) obj;
-		return iRecordId == other.iRecordId && Objects.equals(sFirstName, other.sFirstName)
+		return iClientId == other.iClientId && Objects.equals(sFirstName, other.sFirstName)
 				&& Objects.equals(sLastName, other.sLastName);
 	}
 
 	@Override
 	public String toString() {
-		return super.toString();
+		String sMethod = "toString(): ";
+		String sToString = "iClientId: [" + iClientId +"] sFirstName: [" + sFirstName + "] sLastName; [" + sLastName + "]";
+		objLogger.debug(sMethod + sToString);
+		return (sToString);
 	}
 
 	

@@ -1,4 +1,4 @@
-package com.tlw8253.utility;
+package com.tlw8253.util;
 
 import java.sql.Connection;
 import java.sql.SQLException;
