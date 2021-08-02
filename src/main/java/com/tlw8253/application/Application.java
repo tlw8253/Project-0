@@ -1,14 +1,15 @@
 package com.tlw8253.application;
 
-import java.util.List;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.tlw8253.exception.DatabaseException;
-import com.tlw8253.javalin.JavalinHelper;
-import com.tlw8253.model.Client;
-import com.tlw8253.service.ClinetService;
+import com.tlw8253.controller.Controller;
+import com.tlw8253.controller.ExceptionController;
+import com.tlw8253.controller.ClientController;
+//import com.tlw8253.controller.TestController; TODO:
+
+import io.javalin.Javalin;
+
 
 /**
  * This is the main driver for this project.
@@ -29,34 +30,52 @@ import com.tlw8253.service.ClinetService;
  */
 public class Application implements Constants {
 	private final static Logger objLogger = LoggerFactory.getLogger(Application.class);
+	private static Javalin app;
 	
 	public static void main(String[] args) {
 		String sMethod = "main(): ";
+		
 		objLogger.trace(sMethod + "Entered");
+		
+		app = Javalin.create();
+		mapControllers(/*new TestController(),*/ new ClientController(), new ExceptionController());
+		
+		objLogger.info(sMethod + "Starting listening on port: [" + ciListingPort + "]");
+		app.start(ciListingPort); // start up our Javalin server on port defined for this program
 		
 //		JavalinHelper objJavalinHelper = new JavalinHelper();
 //		objJavalinHelper.createRoutes();
 //		objJavalinHelper.start(ciListingPort);
 		
-		ClinetService objClientService = new ClinetService();
-		
-		try {
-			String sMsg = "";
-			List<Client> lstClients = objClientService.getAllClients();
-			for(int iCtr=0; iCtr<lstClients.size(); iCtr++) {
-				sMsg = sMethod + "List element: [" + iCtr + "]: " + lstClients.get(iCtr).toString();
-				objLogger.info(sMsg);
-				
-			}
-				
-			
+	}
+	
+	
+	//
+	//###
+	public static void mapControllers(Controller... controllers) {
+		for (Controller c : controllers) {
+			c.mapEndpoints(Application.app);
 		}
-		catch(DatabaseException objE) {
-			objLogger.error(sMethod + "DatabaseException: [" + objE + "]");
-			
-		}
-		
-
 	}
 
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

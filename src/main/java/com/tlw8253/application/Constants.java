@@ -29,15 +29,15 @@ public interface Constants {
 	
 	//database constants 
 	String csDatabaseName = "project0";							//database name
-	//String csClientTable = "client";		//client table
 	String csClientTable = csDatabaseName + "." + "client";		//client table
 	String csPhoneTable = csDatabaseName + "." + "phone";		//phone table
 	String csAccountTable = csDatabaseName + "." + "account";	//account table
 	
-	//client table constants
+	//client table constants these must match the table attributes
 	String csClientTblClientId = "client_id";
-	String csClientTblFirstName = "first_name";
-	String csClientTblLastName = "last_name";
+	String csClientTblFirstName = "client_first_name";
+	String csClientTblLastName = "client_last_name";
+	String csClientTblNickname = "client_nickname";
 	
 	
 

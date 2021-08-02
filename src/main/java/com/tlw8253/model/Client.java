@@ -13,6 +13,7 @@ public class Client {
 	private int iClientId = 0;
 	private String sFirstName = "";
 	private String sLastName = "";
+	private String sNickname = "";
 
 //	private List<Phone> listPhones;		TBD
 //	private List<Account> listAccounts;	to be implemented
@@ -22,37 +23,46 @@ public class Client {
 		super();
 	}
 
-	public Client(int iRecordId, String sFirstName, String sLastName) {
+	public Client(int iRecordId, String sFirstName, String sLastName, String sNickname) {
 		super();
 		this.iClientId = iRecordId;
 		this.sFirstName = sFirstName;
 		this.sLastName = sLastName;
+		this.sNickname = sNickname;
 	}
 
 	//
 	//### getters & setters
-	public int getiRecordId() {
+	public int getRecordId() {
 		return iClientId;
 	}
 
-	public void setiRecordId(int iRecordId) {
+	public void setRecordId(int iRecordId) {
 		this.iClientId = iRecordId;
 	}
 
-	public String getsFirstName() {
+	public String getFirstName() {
 		return sFirstName;
 	}
-
-	public void setsFirstName(String sFirstName) {
+	
+	public void setFirstName(String sFirstName) {
 		this.sFirstName = sFirstName;
 	}
 
-	public String getsLastName() {
+	public String getLastName() {
 		return sLastName;
 	}
 
-	public void setsLastName(String sLastName) {
+	public void setLastName(String sLastName) {
 		this.sLastName = sLastName;
+	}
+	
+	public String getNickname() {
+		return sNickname;
+	}
+
+	public void setNickname(String sNickname) {
+		this.sNickname = sNickname;
 	}
 
 		
@@ -77,7 +87,9 @@ public class Client {
 	@Override
 	public String toString() {
 		String sMethod = "toString(): ";
-		String sToString = "iClientId: [" + iClientId +"] sFirstName: [" + sFirstName + "] sLastName; [" + sLastName + "]";
+		String sToString = "Client Id: [" + iClientId +"] First Name: [" 
+							+ sFirstName + "] Last Name; [" + sLastName + "]"
+							+ " Nickname: [" + sNickname + "]";
 		objLogger.debug(sMethod + sToString);
 		return (sToString);
 	}

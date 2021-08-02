@@ -14,17 +14,17 @@ import com.tlw8253.dao.ClientDAOImpl;
 import com.tlw8253.dto.AddOrEditClientDTO;
 import com.tlw8253.model.Client;
 
-public class ClinetService {
-	private Logger objLogger = LoggerFactory.getLogger(ClinetService.class);
+public class ClientService {
+	private Logger objLogger = LoggerFactory.getLogger(ClientService.class);
 
 	private ClientDAO objClientDAO;
 
-	public ClinetService() {
+	public ClientService() {
 		this.objClientDAO = new ClientDAOImpl();
 	}
 
 	// Fake Client object used for testing
-	public ClinetService(ClientDAO objMockedClientDAO) {
+	public ClientService(ClientDAO objMockedClientDAO) {
 		this.objClientDAO = objMockedClientDAO;
 	}
 
@@ -73,24 +73,26 @@ public class ClinetService {
 
 	//
 	// ###
-	public Client addClient(AddOrEditClientDTO objClient) throws DatabaseException, BadParameterException {
+	public Client addClient(AddOrEditClientDTO objAddClientDTO) throws DatabaseException, BadParameterException {
 		String sMethod = "addClient(): ";
 
-		if (objClient.getFirstName().trim().equals("") || objClient.getLastName().trim().equals("")) {
-			String sMsg = sMethod + "Client name must not contain a blank: first name: [" + objClient.getFirstName()
-					+ "]" + " last name [" + objClient.getLastName() + "]";
+		//check first and last name for values, nickname is not required
+		if (objAddClientDTO.getFirstName().trim().equals("") || 
+				objAddClientDTO.getLastName().trim().equals("")) {
+			String sMsg = sMethod + "Client name must not contain a blank: first name: [" + objAddClientDTO.getFirstName()
+					+ "]" + " last name [" + objAddClientDTO.getLastName() + "]";
 			objLogger.debug(sMsg);
 
 			throw new BadParameterException(sMsg);
 		}
 
 		try {
-			Client objAddedClient = objClientDAO.addClient(objClient);
+			Client objAddedClient = objClientDAO.addClient(objAddClientDTO);
 
 			return (objAddedClient);
 		} catch (SQLException objE) {
-			String sMsg = sMethod + "Database error adding client: first name: [" + objClient.getFirstName() + "]"
-					+ " last name [" + objClient.getLastName() + "]";
+			String sMsg = sMethod + "Database error adding client: first name: [" + objAddClientDTO.getFirstName() + "]"
+					+ " last name [" + objAddClientDTO.getLastName() + "]";
 			objLogger.error(sMsg + "[" + objE.getMessage() + "]");
 			throw new DatabaseException(sMsg);
 		}
@@ -99,7 +101,7 @@ public class ClinetService {
 
 	//
 	// ###
-	public Client editClient(String sClientId, AddOrEditClientDTO objClient)
+	public Client editClient(String sClientId, AddOrEditClientDTO objEditClientDTO)
 			throws DatabaseException, ClientNotFoundException, BadParameterException {
 		String sMethod = "editClient(): ";
 		String sMsg = "";
@@ -115,11 +117,11 @@ public class ClinetService {
 			}
 
 			// record found, update the Client
-			Client objEditedClient = objClientDAO.editClient(iClientId, objClient);
+			Client objEditedClient = objClientDAO.editClient(iClientId, objEditClientDTO);
 			return objEditedClient;
 		} catch (SQLException objE) {
-			sMsg = sMethod + "Database error updating client: first name: [" + objClient.getFirstName() + "]"
-					+ " last name [" + objClient.getLastName() + "]";
+			sMsg = sMethod + "Database error updating client: first name: [" + objEditClientDTO.getFirstName() + "]"
+					+ " last name [" + objEditClientDTO.getLastName() + "]";
 			objLogger.error(sMsg + "[" + objE.getMessage() + "]");
 			throw new DatabaseException(sMsg);
 		} catch (NumberFormatException objE) {

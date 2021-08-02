@@ -6,6 +6,7 @@ import java.util.Objects;
 public class AddOrEditClientDTO {
 	private String sFirstName = "";
 	private String sLastName = "";
+	private String sNickname = "";
 
 	public AddOrEditClientDTO() {
 		super();
@@ -27,6 +28,15 @@ public class AddOrEditClientDTO {
 		this.sLastName = sLastName;
 	}
 
+	public String getNickname() {
+		return sNickname;
+	}
+
+	public void setNickname(String sNickname) {
+		this.sNickname = sNickname;
+	}
+
+	
 	@Override
 	public int hashCode() {
 		return Objects.hash(sFirstName, sLastName);
