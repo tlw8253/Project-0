@@ -14,10 +14,36 @@
 		</encoder>
 	</appender>
 
-	<logger name="io.javalin.Javalin.*" level="INFO" />
+	<!-- Found the logging solution I was looking for via Google search then at: 
+		https://stackoverflow.com/questions/11121846/how-to-configure-logback-for-package -->
+
+	<!-- Turn on specific debugging levels for our program packages -->
+	<!--  When using the notation .application.* like in the Javalin setting it did not work
+			so use without the .* and it should work the way we want. -->
+	<logger name="com.tlw8253.application" level="TRACE" />
+	<logger name="com.tlw8253.controller" level="TRACE" />
+	<logger name="com.tlw8253.dao" level="TRACE" />
+	<logger name="com.tlw8253.dto" level="TRACE" />
+	<logger name="com.tlw8253.execption" level="TRACE" />
+	<logger name="com.tlw8253.javalin" level="TRACE" />
+	<logger name="com.tlw8253.javalin.requests" level="TRACE" />
+	<logger name="com.tlw8253.model" level="TRACE" />
+	<logger name="com.tlw8253.service" level="TRACE" />
+	<logger name="com.tlw8253.util" level="TRACE" />
+	
+	<!--  take off the include all notation: Javalin.*
+	<logger name="io.javalin.Javalin.*" level="INFO" /> 
+	TESTED the assumption with setting the Javalin level to ERROR and did 
+	not see the usual INFO level messages.  However we do want to see INFO from Javalin
+	<logger name="io.javalin.Javalin" level="ERROR" />  -->
+	<logger name="io.javalin.Javalin" level="INFO" />
+	
 
 	<!-- Here I configure my Logger itself. 
-	By default, logback makes use of what is known as the root logger, so that is the one we will make use of -->
+	By default, logback makes use of what is known as the root logger, so that is the one we will make use of.
+	Even after correcting the Javalin package definition above there are still a lot of other packages too
+	numerous to set a specific level.
+	So keep root at a high level and turn on lower levels for our program packages like further above.-->
 	<root level="INFO">
 		<!-- We need to configure what appenders our logger should be using -->
 		<appender-ref ref="myConsoleAppender" />

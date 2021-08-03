@@ -39,7 +39,8 @@ public interface Constants {
 	String csClientTblLastName = "client_last_name";
 	String csClientTblNickname = "client_nickname";
 	
-	
+	//HTTP request parameter constants
+	String csParamClientId = csClientTblClientId; 
 
 
 }

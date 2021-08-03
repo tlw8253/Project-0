@@ -56,9 +56,8 @@ public class ClientDAOImpl implements Constants, ClientDAO {
 			Statement objStatement = conConnection.createStatement();
 
 			// 3. Execute the query
-			//String sql = "SELECT * FROM jdbc_demo.ship";
 			//String sSQL  = "SELECT * FROM project0.client";
-			String sSQL = "SELECT * FROM " + csClientTable + ";";
+			String sSQL = "SELECT * FROM " + csClientTable;
 			objLogger.debug(sMethod + "sSQL statement: [" + sSQL + "]");
 			
 			ResultSet objResultSet = objStatement.executeQuery(sSQL);

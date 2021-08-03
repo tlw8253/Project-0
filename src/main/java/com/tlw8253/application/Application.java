@@ -25,27 +25,30 @@ import io.javalin.Javalin;
  * .service, .util model from the Revature training.  The Javalin website was extremely helpful in starting this project prior
  * to the javalin-jdbc-demo and jdbc-demo training.
  * 
+ * A logback logging desired was achieved by following instructions at a stackoverflow link:
+ * https://stackoverflow.com/questions/11121846/how-to-configure-logback-for-package
+ * The instructions lead to achieving program package level logging while maintaining 
+ * Javalin and other libraries to remain at a higher level.  See logback.xml for details.
+ * 
  * @author tlw8253
  *
  */
 public class Application implements Constants {
 	private final static Logger objLogger = LoggerFactory.getLogger(Application.class);
-	private static Javalin app;
+	private static Javalin objJavalinApp;
 	
 	public static void main(String[] args) {
 		String sMethod = "main(): ";
 		
 		objLogger.trace(sMethod + "Entered");
+		objLogger.debug(sMethod + "Entered");
+		objLogger.info(sMethod + "Entered");
 		
-		app = Javalin.create();
+		objJavalinApp = Javalin.create();
 		mapControllers(/*new TestController(),*/ new ClientController(), new ExceptionController());
 		
 		objLogger.info(sMethod + "Starting listening on port: [" + ciListingPort + "]");
-		app.start(ciListingPort); // start up our Javalin server on port defined for this program
-		
-//		JavalinHelper objJavalinHelper = new JavalinHelper();
-//		objJavalinHelper.createRoutes();
-//		objJavalinHelper.start(ciListingPort);
+		objJavalinApp.start(ciListingPort); // start up our Javalin server on port defined for this program	
 		
 	}
 	
@@ -54,7 +57,7 @@ public class Application implements Constants {
 	//###
 	public static void mapControllers(Controller... controllers) {
 		for (Controller c : controllers) {
-			c.mapEndpoints(Application.app);
+			c.mapEndpoints(Application.objJavalinApp);
 		}
 	}
 
