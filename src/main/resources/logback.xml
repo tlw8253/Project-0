@@ -18,7 +18,7 @@
 		https://stackoverflow.com/questions/11121846/how-to-configure-logback-for-package -->
 
 	<!-- Turn on specific debugging levels for our program packages -->
-	<!--  When using the notation .application.* like in the Javalin setting it did not work
+	<!--  When using the notation package.application.* like in the Javalin setting it did not work
 			so use without the .* and it should work the way we want. -->
 	<logger name="com.tlw8253.application" level="TRACE" />
 	<logger name="com.tlw8253.controller" level="TRACE" />
@@ -32,10 +32,13 @@
 	<logger name="com.tlw8253.util" level="TRACE" />
 	
 	<!--  take off the include all notation: Javalin.*
+	
 	<logger name="io.javalin.Javalin.*" level="INFO" /> 
+	
 	TESTED the assumption with setting the Javalin level to ERROR and did 
-	not see the usual INFO level messages.  However we do want to see INFO from Javalin
+	not see the usual INFO level messages.  However we do want to see INFO from Javalin	
 	<logger name="io.javalin.Javalin" level="ERROR" />  -->
+	
 	<logger name="io.javalin.Javalin" level="INFO" />
 	
 
@@ -52,3 +55,35 @@
 	
 	
 </configuration>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

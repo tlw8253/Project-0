@@ -1,6 +1,7 @@
 package com.tlw8253.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +29,7 @@ import io.javalin.http.Handler;
 	 * 
 	 * - `GET /clients`: Gets all clients
 	 * - `GET /clients/{id}`: Get client with an id of X (if the client exists)
+	 * 
 	 * - `GET /clients/{client_id}/accounts`: Get all accounts for client with id of X (if client exists)
 	 * - `GET /clients/{client_id}/accounts?amountLessThan=2000&amountGreaterThan=400`: 
 	 * 		Get all accounts for client id of X with balances between 400 and 2000 (if client exists)
@@ -60,7 +62,7 @@ public class ClientController implements Controller, Constants {
 		
 		objLogger.debug(sMethod + "lstClients: [" + lstClients.toString() + "]");
 		
-		objCtx.status(200); // 200 means OK
+		objCtx.status(ciStatusCodeSuccess);
 		objCtx.json(lstClients);
 	};
 
@@ -70,24 +72,60 @@ public class ClientController implements Controller, Constants {
 		String sMethod = "getClientById(): ";
 		objLogger.trace(sMethod + "Entered");
 
+		Map<String,String> mPathParmaMap =  objCtx.pathParamMap();
+		objLogger.debug(sMethod + "Context parameter map: [" + mPathParmaMap + "]");
+		
 		String sClientId = objCtx.pathParam(csParamClientId);
-		objLogger.debug(sMethod + "Context parameter client id: [" + sClientId + "]");
+		objLogger.debug(sMethod + "Context parameter client id: [" + sClientId + "]");		
 		
 		Client objClient = objClientService.getClientById(sClientId);
 		objLogger.debug(sMethod + "Client object from database: [" + objClient.toString() + "]");
 		
-		objCtx.status(200); // 200 means OK
+		objCtx.status(ciStatusCodeSuccess);
 		objCtx.json(objClient);
 	};
 
-	
-	
+	//
+	//### `GET /clients/{client_id}/accounts`: Get all accounts for client with id of X (if client exists)
+	private Handler getClientAccounts = (objCtx) -> {		
+		String sMethod = "getClientAccounts(): ";
+		objLogger.trace(sMethod + "Entered");
+
+		Map<String,String> mPathParmaMap =  objCtx.pathParamMap();
+		objLogger.debug(sMethod + "Context parameter map: [" + mPathParmaMap + "]");
+
+		String sClientId = objCtx.pathParam(csParamClientId);
+		objLogger.debug(sMethod + "Context parameter client id: [" + sClientId + "]");
+		
+		String sAccounts = objCtx.pathParam(csParamAccounts);
+		objLogger.debug(sMethod + "Context parameter client id: [" + sAccounts + "]");		
+		
+		//first make sure this is an actual accounts request
+		if (sAccounts.equals(csParamAccounts)) {
+			
+			//second get client from database / make sure they exists
+			Client objClient = objClientService.getClientById(sClientId);
+			objLogger.debug(sMethod + "Client object from database: [" + objClient.toString() + "]");
+			
+			objCtx.status(ciStatusCodeSuccess);
+			objCtx.json(objClient);
+		}
+		else {
+			objCtx.status(ciStatusCodeErrorBadRequest);
+			
+		}
+		
+		
+	};
+
 	
 	@Override
 	public void mapEndpoints(Javalin app) {
 		app.get("/clients", getAllClients);	//`GET /clients`: Gets all clients
-		app.get("/clients/:" + csParamClientId, getClientById);	//`GET /clients/{id}`: Get client with an id of X (if the client exists)
-		
+		//`GET /clients/{client_id}`: Get client with an id of X (if the client exists)
+		app.get("/client/:" + csParamClientId, getClientById);	
+		//`GET /clients/{client_id}/accounts`: Get all accounts for client with id of X (if client exists)
+		app.get("/client/:" + csParamClientId + "/:" + csParamAccounts, getClientAccounts);
 		
 		/*
 		app.get("/ship", getAllShips);

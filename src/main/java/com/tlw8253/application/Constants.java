@@ -17,8 +17,12 @@ package com.tlw8253.application;
 public interface Constants {
 
 	//Return status codes
-	int ciStatusCodeSuccess = 200;
+	//	source: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status
+	int ciStatusCodeSuccess = 200;				//The request has succeeded. 
+	int ciStatusCodeSuccessCreated = 201;		//The request has succeeded and a new resource has been created as a result. 
+	int ciStatusCodeSuccessNoContent = 204;		//There is no content to send for this request,
 
+	int ciStatusCodeErrorBadRequest = 400;		//The server could not understand the request due to invalid syntax.
 
 	//context parameters
 	String csClientname = "clientname";
@@ -30,7 +34,7 @@ public interface Constants {
 	//database constants 
 	String csDatabaseName = "project0";							//database name
 	String csClientTable = csDatabaseName + "." + "client";		//client table
-	String csPhoneTable = csDatabaseName + "." + "phone";		//phone table
+//	String csPhoneTable = csDatabaseName + "." + "phone";		//phone table
 	String csAccountTable = csDatabaseName + "." + "account";	//account table
 	
 	//client table constants these must match the table attributes
@@ -39,8 +43,14 @@ public interface Constants {
 	String csClientTblLastName = "client_last_name";
 	String csClientTblNickname = "client_nickname";
 	
+	//account table constants these must match the table attributes
+	String csAccountTblAccountNumber = "acct_number";
+	String csAccountTblAccountName = "acct_name";
+	String csAccountTblAccountBalance = "acct_balance";
+	
 	//HTTP request parameter constants
 	String csParamClientId = csClientTblClientId; 
+	String csParamAccounts = "accounts";	//request parameter used in conjunction with id to get all accounts
 
 
 }

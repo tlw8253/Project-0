@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.tlw8253.dto.AddOrEditClientDTO;
+import com.tlw8253.dto.GenericAddDTO;
 import com.tlw8253.exception.DatabaseException;
 import com.tlw8253.javalin.JavalinHelper;
 import com.tlw8253.model.Client;
@@ -37,9 +38,9 @@ public class Driver implements Constants {
 	public static void main(String[] args) {
 		
 		//Test initial architecture based on Javalin website example
-		JavalinHelper objJavalinHelper = new JavalinHelper();
-		objJavalinHelper.createRoutes();
-		objJavalinHelper.start(ciListingPort);
+//		JavalinHelper objJavalinHelper = new JavalinHelper();
+//		objJavalinHelper.createRoutes();
+//		objJavalinHelper.start(ciListingPort);
 
 
 		//Test database access for Client
@@ -50,6 +51,19 @@ public class Driver implements Constants {
 		//deleteClient();
 		//getAllCients();
 		
+		
+		testGenericAddDTO();
+		
+		
+	}
+	
+	public static void testGenericAddDTO() {
+		String sMethod = "testGenericAddDTO(): ";
+		GenericAddDTO objGenericAddDTO = new GenericAddDTO();
+		
+		objGenericAddDTO.setDataElement("Test1", "TestValue1");
+		objGenericAddDTO.setDataElement("Test2", "TestValue2");
+		objLogger.debug(sMethod + objGenericAddDTO.toString());
 	}
 	
 	//
