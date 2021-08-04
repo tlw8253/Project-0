@@ -11,17 +11,19 @@ public class Account {
 	private String sAccountNumber = ""; //account number is the unique record id
 	private String sAccountName = "";
 	private double dAccountBalance = 0.0;
+	private int iClientId = 0;
 	
 	public Account() {
 		super();
 	}
 
-	public Account(String sAccountName, String sAccountNumber, double dAccountBalance) {
+	public Account(String sAccountName, String sAccountNumber, double dAccountBalance, int iClientId) {
 		super();
 		
 		this.sAccountName = sAccountName;
 		this.sAccountNumber = sAccountNumber;
 		this.dAccountBalance = dAccountBalance;
+		this.iClientId = iClientId;
 	}
 
 	public String getAccountName() {
@@ -47,10 +49,20 @@ public class Account {
 	public void setAccountBalance(double dAccountBalance) {
 		this.dAccountBalance = dAccountBalance;
 	}
+	
+	public void setClientId(int iClientId) {
+		this.iClientId = iClientId;
+	}
+	public int getClientId() {
+		return iClientId;
+	}
 
+
+	
+	
 	@Override
 	public int hashCode() {
-		return Objects.hash(dAccountBalance, sAccountName, sAccountNumber);
+		return Objects.hash(dAccountBalance, iClientId, sAccountName, sAccountNumber);
 	}
 
 	@Override
@@ -63,7 +75,7 @@ public class Account {
 			return false;
 		Account other = (Account) obj;
 		return Double.doubleToLongBits(dAccountBalance) == Double.doubleToLongBits(other.dAccountBalance)
-				&& Objects.equals(sAccountName, other.sAccountName)
+				&& iClientId == other.iClientId && Objects.equals(sAccountName, other.sAccountName)
 				&& Objects.equals(sAccountNumber, other.sAccountNumber);
 	}
 
@@ -72,7 +84,8 @@ public class Account {
 		String sMethod = "toString(): ";
 		
 		String sToString = "Account [sAccountNumber=" + sAccountNumber + ", sAccountName=" 
-							+ sAccountName + ", dAccountBalance=" + dAccountBalance + "]";
+							+ sAccountName + ", dAccountBalance=" + dAccountBalance
+							+ "iClientId " + iClientId  + "]";
 		objLogger.debug(sMethod + "[" + sToString + "]");
 		
 		return(sToString);

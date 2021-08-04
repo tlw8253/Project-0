@@ -10,23 +10,17 @@ import org.slf4j.LoggerFactory;
 
 
 //DTO - Data Transfer Object
-public class GenericAddDTO {
-	private Logger objLogger = LoggerFactory.getLogger(GenericAddDTO.class);
+public class AddDTO {
+	private Logger objLogger = LoggerFactory.getLogger(AddDTO.class);
 	
 	HashMap<String, String> hmDataElements; //expected format: <databaseTable.column>,<value> 
 	
-	/*
-	private String sFirstName = "";
-	private String sLastName = "";
-	private String sNickname = "";
-	*/
-
-	public GenericAddDTO() {
+	public AddDTO() {
 		super();
 		hmDataElements = new HashMap<String, String>();
 	}
 	
-	public GenericAddDTO(HashMap<String, String> hmDataElements) {
+	public AddDTO(HashMap<String, String> hmDataElements) {
 		super();
 		this.hmDataElements = hmDataElements;
 	}
@@ -53,7 +47,7 @@ public class GenericAddDTO {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		GenericAddDTO other = (GenericAddDTO) obj;
+		AddDTO other = (AddDTO) obj;
 		return Objects.equals(hmDataElements, other.hmDataElements);
 	}
 
@@ -71,6 +65,23 @@ public class GenericAddDTO {
 		return sToString;
 	}
 	
+	//
+	//### create retrun string in specific order of keys passed in
+	public String toStringByKeys(String... sKey) {//Varargs parameter list
+		String sMethod = "toStringByKeys(): ";
+		String sToString = "";
+		
+		for (int iCtr=0; iCtr<sKey.length; iCtr++) {
+			String sThisKey = sKey[iCtr];
+			objLogger.debug(sMethod + "sKey[" + sKey + "]: [" + sKey[iCtr] + "]" );
+			
+			sToString += "[" + sThisKey + "]: [" + hmDataElements.get(sThisKey) + "] ";			
+		}
+		objLogger.debug(sMethod + "sToString: [" + sToString + "]");		
+		
+		return sToString;
+	}
+	
 	//Should move to utility class
 	//###
 	private TreeSet<String> getSortedKeys(){
@@ -84,25 +95,6 @@ public class GenericAddDTO {
 		return treeSetKeys;
 	}
 
-	
-	/*	
-	//
-	//###
-	public TreeSet<String> getSortedNames(){
-		Set<String> objKeys = objBarrierMap.keySet();
-		TreeSet<String> objSortedKeys = new TreeSet<String>(objKeys);
-		return(objSortedKeys);
-	}
-	
-	//
-	//###
-	public void printBarriers() {
-		TreeSet<String> objSortedNames = getSortedNames();
-		for(String sName : objSortedNames)
-			System.out.println(sName + ": [" + objBarrierMap.get(sName).toString() + "]");		
-	}
-	
-*/
 	
 	
 }

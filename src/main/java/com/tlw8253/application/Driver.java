@@ -5,10 +5,13 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.tlw8253.dao.AccountDAOImpl;
+import com.tlw8253.dto.AccountAddDTO;
 import com.tlw8253.dto.AddOrEditClientDTO;
-import com.tlw8253.dto.GenericAddDTO;
+import com.tlw8253.dto.AddDTO;
 import com.tlw8253.exception.DatabaseException;
 import com.tlw8253.javalin.JavalinHelper;
+import com.tlw8253.model.Account;
 import com.tlw8253.model.Client;
 import com.tlw8253.service.ClientService;
 
@@ -17,16 +20,21 @@ import com.tlw8253.service.ClientService;
  * built. The Application class will be the main entry point for the program
  * when done.
  * 
- * Concepts, classes, methods and coding are in part based on the javalin-jdbc-demo and jdbc-demo projects
- * shown in the Revature java-with-automation training by Bach Tran.  This project is not entirely a direct copy
- * from the training but concepts and coding examples where used and modified for the purposes of Project-0.  
- * With that said, parts of the code where used verbatim with class, method, and variable name changes.
+ * Concepts, classes, methods and coding are in part based on the
+ * javalin-jdbc-demo and jdbc-demo projects shown in the Revature
+ * java-with-automation training by Bach Tran. This project is not entirely a
+ * direct copy from the training but concepts and coding examples where used and
+ * modified for the purposes of Project-0. With that said, parts of the code
+ * where used verbatim with class, method, and variable name changes.
  * 
- * Another source for inspiration and code manipulation came from the Javalin website: https://javalin.io/tutorials/testing
- * and a cloning of the https://github.com/tipsy/javalin-testing-example.git repository.  Code was modified for starting
- * this project.  However not much will remain at the end once implementing the .app, .controller, .dao, .dto. .exception, .model,
- * .service, .util model from the Revature training.  The Javalin website was extremely helpful in starting this project prior
- * to the javalin-jdbc-demo and jdbc-demo training.
+ * Another source for inspiration and code manipulation came from the Javalin
+ * website: https://javalin.io/tutorials/testing and a cloning of the
+ * https://github.com/tipsy/javalin-testing-example.git repository. Code was
+ * modified for starting this project. However not much will remain at the end
+ * once implementing the .app, .controller, .dao, .dto. .exception, .model,
+ * .service, .util model from the Revature training. The Javalin website was
+ * extremely helpful in starting this project prior to the javalin-jdbc-demo and
+ * jdbc-demo training.
  * 
  * 
  * @author tlw8748253
@@ -36,36 +44,67 @@ public class Driver implements Constants {
 	private final static Logger objLogger = LoggerFactory.getLogger(Driver.class);
 
 	public static void main(String[] args) {
-		
-		//Test initial architecture based on Javalin website example
+
+		// Test initial architecture based on Javalin website example
 //		JavalinHelper objJavalinHelper = new JavalinHelper();
 //		objJavalinHelper.createRoutes();
 //		objJavalinHelper.start(ciListingPort);
 
-
-		//Test database access for Client
-		//getAllCients();
+		// Test database access for Client
+		// getAllCients();
 		// getCientById("1");
-		//addClient();
-		//editClient();
-		//deleteClient();
-		//getAllCients();
-		
-		
-		testGenericAddDTO();
-		
-		
+		// addClient();
+		// editClient();
+		// deleteClient();
+		// getAllCients();
+
+		// testGenericAddDTO();
+		//testAccountAddDTO();
+		testAccountDAOImpl();
+
 	}
-	
+
+	//
+	// ###
+	public static void testAccountDAOImpl() {
+		String sMethod = "testAccountDAOImpl(): ";
+		AccountDAOImpl objAccountDAOImpl = new AccountDAOImpl();
+
+		try {
+			List<Account> lstAccounts = objAccountDAOImpl.getAllRecords();
+
+			for (int iCtr = 0; iCtr < lstAccounts.size(); iCtr++) {
+				Account objAccount = lstAccounts.get(iCtr);
+				objLogger.debug(sMethod + objAccount.toString());
+			}
+		} catch (Exception objE) {
+			objLogger.error(sMethod + "Exception: [" + objE.getMessage() + "]");
+		}
+	}
+
+	//
+	// ###
+	public static void testAccountAddDTO() {
+		String sMethod = "testAccountAddDTO(): ";
+		AccountAddDTO objAccountAddDTO = new AccountAddDTO();
+
+		objAccountAddDTO.setAccountNumber("07913");
+		objAccountAddDTO.setAccountName("My Account");
+		objAccountAddDTO.setAccountBalance("5032.64");
+		objLogger.debug(sMethod + objAccountAddDTO.toString());
+	}
+
+	//
+	// ###
 	public static void testGenericAddDTO() {
 		String sMethod = "testGenericAddDTO(): ";
-		GenericAddDTO objGenericAddDTO = new GenericAddDTO();
-		
+		AddDTO objGenericAddDTO = new AddDTO();
+
 		objGenericAddDTO.setDataElement("Test1", "TestValue1");
 		objGenericAddDTO.setDataElement("Test2", "TestValue2");
 		objLogger.debug(sMethod + objGenericAddDTO.toString());
 	}
-	
+
 	//
 	// ###
 	public static void deleteClient() {
@@ -74,14 +113,14 @@ public class Driver implements Constants {
 		String sClientId = "5";
 
 		try {
-			String sMsg = sMethod + "Deleting client with id of: [" +  sClientId + "]";
+			String sMsg = sMethod + "Deleting client with id of: [" + sClientId + "]";
 			objLogger.debug(sMsg);
-			
+
 			objClientService.deleteClient(sClientId);
 
-			sMsg = sMethod + "Checking if client with id of: [" +  sClientId + "] still exists.";
+			sMsg = sMethod + "Checking if client with id of: [" + sClientId + "] still exists.";
 			objLogger.debug(sMsg);
-			
+
 			getCientById("5");
 
 		} catch (Exception objE) {
@@ -91,16 +130,12 @@ public class Driver implements Constants {
 
 	}
 
-	
-	
-	
-	
 	// ###
 	public static void editClient() {
 		String sMethod = "editClient(): ";
 		ClientService objClientService = new ClientService();
 		AddOrEditClientDTO objEditClientDTO = new AddOrEditClientDTO();
-		
+
 		String sClientId = "5";
 
 		objEditClientDTO.setFirstName("Earl2");
@@ -120,8 +155,6 @@ public class Driver implements Constants {
 		}
 
 	}
-
-
 
 	//
 	// ###
@@ -174,7 +207,7 @@ public class Driver implements Constants {
 	// ###
 	public static void getCientById(String sClientId) {
 		String sMethod = "getCientById(): ";
-		ClientService objClientService = new ClientService();		
+		ClientService objClientService = new ClientService();
 
 		try {
 			String sMsg = "";

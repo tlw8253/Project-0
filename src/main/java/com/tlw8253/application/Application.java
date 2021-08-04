@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 
 import com.tlw8253.controller.Controller;
 import com.tlw8253.controller.ExceptionController;
+import com.tlw8253.controller.AccountController;
 import com.tlw8253.controller.ClientController;
 //import com.tlw8253.controller.TestController; TODO:
 
@@ -45,7 +46,7 @@ public class Application implements Constants {
 		objLogger.info(sMethod + "Entered");
 		
 		objJavalinApp = Javalin.create();
-		mapControllers(/*new TestController(),*/ new ClientController(), new ExceptionController());
+		mapControllers(/*new TestController(),*/ new ClientController(), new ExceptionController(), new AccountController());
 		
 		objLogger.info(sMethod + "Starting listening on port: [" + ciListingPort + "]");
 		objJavalinApp.start(ciListingPort); // start up our Javalin server on port defined for this program	

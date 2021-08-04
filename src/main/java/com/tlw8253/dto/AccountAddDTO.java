@@ -1,40 +1,49 @@
 package com.tlw8253.dto;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.tlw8253.application.Constants;
 
-public class AccountAddDTO implements Constants {
-	GenericAddDTO objAddDTO;
+public class AccountAddDTO extends AddDTO implements Constants {
+	private Logger objLogger = LoggerFactory.getLogger(AccountAddDTO.class);
 
+	
 	public AccountAddDTO() {
 		super();
-		objAddDTO = new GenericAddDTO();
-		
 	}
-	
+
 	public void setAccountNumber(String sAccountNumber) {
-		objAddDTO.setDataElement(csAccountTblAccountNumber, sAccountNumber);		
+		super.setDataElement(csAccountTblAccountNumber, sAccountNumber);		
 	}
 	public String getAccountNumber() {
-		return objAddDTO.getDataElement(csAccountTblAccountNumber);		
+		return super.getDataElement(csAccountTblAccountNumber);		
 	}
 
 	public void setAccountName(String sAccountName) {
-		objAddDTO.setDataElement(csAccountTblAccountName, sAccountName);		
+		super.setDataElement(csAccountTblAccountName, sAccountName);		
 	}
 	public String getAccountName() {
-		return objAddDTO.getDataElement(csAccountTblAccountName);		
+		return super.getDataElement(csAccountTblAccountName);		
 	}
 
 	public void setAccountBalance(String sAccountBalance) {
-		objAddDTO.setDataElement(csAccountTblAccountBalance, sAccountBalance);		
+		super.setDataElement(csAccountTblAccountBalance, sAccountBalance);		
 	}
 	public String getAccountBalance() {
-		return objAddDTO.getDataElement(csAccountTblAccountBalance);		
+		return super.getDataElement(csAccountTblAccountBalance);		
 	}
 	
 	@Override
 	public String toString() {
-		return objAddDTO.toString();
+		String sMethod = "toString(): ";
+		String sToString = "";
+		
+		sToString = super.toStringByKeys(csAccountTblAccountNumber, csAccountTblAccountName, csAccountTblAccountBalance, csClientTblClientId);
+		objLogger.debug(sMethod + "sToString: [" + sToString + "]");
+		
+		return sToString;
+		//return super.toString();
 	}
-	
+
 }
