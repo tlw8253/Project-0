@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Objects;
 
 //DTO - Data Transfer Object
-public class GenericEditDTO {
+public class EditDTO {
 	
 	HashMap<String, String> hmDataElements; //expected format: <databaseTable.column>,<value> 
 	
@@ -14,7 +14,7 @@ public class GenericEditDTO {
 	private String sNickname = "";
 	*/
 
-	public GenericEditDTO(HashMap<String, String> hmDataElements) {
+	public EditDTO(HashMap<String, String> hmDataElements) {
 		super();
 		this.hmDataElements = hmDataElements;
 	}
@@ -41,7 +41,7 @@ public class GenericEditDTO {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		GenericEditDTO other = (GenericEditDTO) obj;
+		EditDTO other = (EditDTO) obj;
 		return Objects.equals(hmDataElements, other.hmDataElements);
 	}
 

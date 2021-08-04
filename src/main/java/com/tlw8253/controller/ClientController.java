@@ -6,8 +6,10 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.tlw8253.service.AccountService;
 import com.tlw8253.service.ClientService;
 import com.tlw8253.application.Constants;
+import com.tlw8253.model.Account;
 import com.tlw8253.model.Client;
 
 import io.javalin.Javalin;
@@ -28,9 +30,9 @@ import io.javalin.http.Handler;
 	 * 		client with id of X (if client and account exist AND if account belongs to client)
 	 * 
 	 * - `GET /clients`: Gets all clients
-	 * - `GET /clients/{id}`: Get client with an id of X (if the client exists)
-	 * 
+	 * - `GET /clients/{id}`: Get client with an id of X (if the client exists)	 * 
 	 * - `GET /clients/{client_id}/accounts`: Get all accounts for client with id of X (if client exists)
+	 * 
 	 * - `GET /clients/{client_id}/accounts?amountLessThan=2000&amountGreaterThan=400`: 
 	 * 		Get all accounts for client id of X with balances between 400 and 2000 (if client exists)
 	 * - `GET /clients/{client_id}/accounts/{account_id}`: Get account with id of Y belonging to client with id of 
@@ -107,8 +109,17 @@ public class ClientController implements Controller, Constants {
 			Client objClient = objClientService.getClientById(sClientId);
 			objLogger.debug(sMethod + "Client object from database: [" + objClient.toString() + "]");
 			
+			//third get the accounts for this client
+			AccountService objAccountService = new AccountService();
+			//use int method since we know client exists
+			List<Account> lstAccounts = objAccountService.getAccountsForClient(objClient.getRecordId()); 
+			objLogger.debug(sMethod + "Client accounts from AccountSerice: [" + lstAccounts.toString() + "]");
+			
+			objClient.set(lstAccounts); // add accounts in client for the json response
+			
 			objCtx.status(ciStatusCodeSuccess);
-			objCtx.json(objClient);
+			objCtx.json(objClient);	//send client object with accounts
+			//objCtx.json(lstAccounts);
 		}
 		else {
 			objCtx.status(ciStatusCodeErrorBadRequest);

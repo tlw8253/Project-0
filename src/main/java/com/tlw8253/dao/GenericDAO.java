@@ -4,7 +4,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 import com.tlw8253.dto.AddDTO;
-import com.tlw8253.dto.GenericEditDTO;
+import com.tlw8253.dto.EditDTO;
 
 //import com.tlw8253.model.Client;
 
@@ -32,15 +32,17 @@ public interface GenericDAO<T> {
 	 * @param iRecordId is an int that represents the primary key of the client in the database
 	 * @return Client a representation of what a Client is, or null if none was found
 	 */
-	public abstract T getByRecordId(int iRecordId) throws SQLException;
+	//public abstract T getByRecordId(int iRecordId) throws SQLException;
+	//		using string so called method can convert to type needed
+	public abstract T getByRecordIdentifer(String sRecordIdentifier) throws SQLException; 
 	
 	// Here we are making use of a parameter known as ClientDTO, which is a Data Transfer Object
 	// This being a DTO is used to pass the Client model data around in the program.
 
 	public abstract T addRecord(AddDTO objGenericAddDTO) throws SQLException;
 	
-	public abstract T editRecord(int iRecordId, GenericEditDTO objGenericEditDTO) throws SQLException;
+	public abstract T editRecord(String sRecordIdentifier, EditDTO objGenericEditDTO) throws SQLException;
 	
-	public abstract void deleteRecord(int iRecordId) throws SQLException;
+	public abstract void deleteRecord(String sRecordIdentifier) throws SQLException;
 
 }

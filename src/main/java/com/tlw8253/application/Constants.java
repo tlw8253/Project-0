@@ -45,12 +45,16 @@ public interface Constants {
 	
 	//account table constants these must match the table attributes
 	String csAccountTblAccountNumber = "acct_number";
+	int ciAccountTblAccountNumberLen = 5;
 	String csAccountTblAccountName = "acct_name";
 	String csAccountTblAccountBalance = "acct_balance";
 	
 	//HTTP request parameter constants
 	String csParamClientId = csClientTblClientId; 
 	String csParamAccounts = "accounts";	//request parameter used in conjunction with id to get all accounts
+	String csParamAccountNumber = csAccountTblAccountNumber;
+	String csParamAccountsLessThan = "acct_less_than";
+	String csParamAccountsGreaterThan = "acct_greater_than";
 
 
 }

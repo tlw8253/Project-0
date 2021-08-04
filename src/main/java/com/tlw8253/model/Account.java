@@ -17,11 +17,11 @@ public class Account {
 		super();
 	}
 
-	public Account(String sAccountName, String sAccountNumber, double dAccountBalance, int iClientId) {
+	public Account(String sAccountNumber, String sAccountName, double dAccountBalance, int iClientId) {
 		super();
 		
-		this.sAccountName = sAccountName;
 		this.sAccountNumber = sAccountNumber;
+		this.sAccountName = sAccountName;
 		this.dAccountBalance = dAccountBalance;
 		this.iClientId = iClientId;
 	}
@@ -83,9 +83,9 @@ public class Account {
 	public String toString() {
 		String sMethod = "toString(): ";
 		
-		String sToString = "Account [sAccountNumber=" + sAccountNumber + ", sAccountName=" 
-							+ sAccountName + ", dAccountBalance=" + dAccountBalance
-							+ "iClientId " + iClientId  + "]";
+		String sToString = "Account [sAccountNumber= [" + sAccountNumber + "], sAccountName= [" 
+							+ sAccountName + "], dAccountBalance= [" + dAccountBalance
+							+ "] iClientId= [" + iClientId  + "]]";
 		objLogger.debug(sMethod + "[" + sToString + "]");
 		
 		return(sToString);

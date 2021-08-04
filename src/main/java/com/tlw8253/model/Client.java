@@ -16,7 +16,7 @@ public class Client {
 	private String sNickname = "";
 
 //	private List<Phone> listPhones;		TBD
-//	private List<Account> listAccounts;	to be implemented
+	private List<Account> lstAccounts;
 	
 	
 	public Client() {
@@ -28,7 +28,7 @@ public class Client {
 		this.iClientId = iRecordId;
 		this.sFirstName = sFirstName;
 		this.sLastName = sLastName;
-		this.sNickname = sNickname;
+		this.sNickname = sNickname;		
 	}
 
 	//
@@ -65,6 +65,13 @@ public class Client {
 		this.sNickname = sNickname;
 	}
 
+	public List<Account> getAccounts(){
+		return this.lstAccounts;
+	}
+	public void set(List<Account> lstAccounts) {
+		this.lstAccounts =lstAccounts;
+	}
+	
 		
 	@Override
 	public int hashCode() {

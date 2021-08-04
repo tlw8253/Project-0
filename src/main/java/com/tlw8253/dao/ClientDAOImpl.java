@@ -93,12 +93,12 @@ public class ClientDAOImpl implements Constants, ClientDAO {
 			String sSQL = "SELECT * FROM " + csClientTable + " WHERE " + csClientTblClientId + " = ?";
 			objLogger.debug(sMethod + "sSQL statement: [" + sSQL + "]");
 
-			PreparedStatement ObjPreparedStatmnt = conConnection.prepareStatement(sSQL);
+			PreparedStatement objPreparedStatmnt = conConnection.prepareStatement(sSQL);
 
-			ObjPreparedStatmnt.setInt(1, iClientId); // set passed in client id in place of ?
+			objPreparedStatmnt.setInt(1, iClientId); // set passed in client id in place of ?
 
 			// Execute the query
-			ResultSet objResultSet = ObjPreparedStatmnt.executeQuery();
+			ResultSet objResultSet = objPreparedStatmnt.executeQuery();
 
 			// This should be a unique get based on the client id
 			// If there is a record then success, else not found
@@ -222,11 +222,11 @@ public class ClientDAOImpl implements Constants, ClientDAO {
 
 			objLogger.debug(sMethod + "sSQL statement: [" + sSQL + "]");
 
-			PreparedStatement ObjPreparedStatmnt = conConnection.prepareStatement(sSQL);
+			PreparedStatement objPreparedStatmnt = conConnection.prepareStatement(sSQL);
 
-			ObjPreparedStatmnt.setInt(1, iClientId);
+			objPreparedStatmnt.setInt(1, iClientId);
 
-			int iRecssDeleted = ObjPreparedStatmnt.executeUpdate();
+			int iRecssDeleted = objPreparedStatmnt.executeUpdate();
 
 			// if it is not 1, we know that no records were actually deleted
 			if (iRecssDeleted != 1) {
