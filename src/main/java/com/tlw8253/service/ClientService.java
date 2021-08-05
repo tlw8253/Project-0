@@ -88,12 +88,12 @@ public class ClientService {
 
 		try {
 			Client objAddedClient = objClientDAO.addClient(objAddClientDTO);
-
+			objLogger.debug(sMethod + "objAddedClient: [" + objAddedClient.toString() + "]");
 			return (objAddedClient);
 		} catch (SQLException objE) {
-			String sMsg = sMethod + "Database error adding client: first name: [" + objAddClientDTO.getFirstName() + "]"
+			String sMsg = "Database error adding client: first name: [" + objAddClientDTO.getFirstName() + "]"
 					+ " last name [" + objAddClientDTO.getLastName() + "]";
-			objLogger.error(sMsg + "[" + objE.getMessage() + "]");
+			objLogger.error(sMethod + sMsg + "[" + objE.getMessage() + "]");
 			throw new DatabaseException(sMsg);
 		}
 
@@ -111,8 +111,8 @@ public class ClientService {
 
 			// Client must exist to edit if client does not exist, throw an Exception
 			if (objClientDAO.getClientById(iClientId) == null) {
-				sMsg = sMethod + "Client with id: [" + iClientId + "] was not found, unable to update.";
-				objLogger.debug(sMsg);
+				sMsg = "Client with id: [" + iClientId + "] was not found, unable to update.";
+				objLogger.debug(sMethod + sMsg);
 				throw new ClientNotFoundException(sMsg);
 			}
 
@@ -120,13 +120,13 @@ public class ClientService {
 			Client objEditedClient = objClientDAO.editClient(iClientId, objEditClientDTO);
 			return objEditedClient;
 		} catch (SQLException objE) {
-			sMsg = sMethod + "Database error updating client: first name: [" + objEditClientDTO.getFirstName() + "]"
+			sMsg = "Database error updating client: first name: [" + objEditClientDTO.getFirstName() + "]"
 					+ " last name [" + objEditClientDTO.getLastName() + "]";
-			objLogger.error(sMsg + "[" + objE.getMessage() + "]");
+			objLogger.error(sMethod + sMsg + "[" + objE.getMessage() + "]");
 			throw new DatabaseException(sMsg);
 		} catch (NumberFormatException objE) {
-			sMsg = sMethod + "Client Id is not an integer: [" + sClientId + "]";
-			objLogger.error(sMsg + "[" + objE.getMessage() + "]");
+			sMsg = "Client Id is not an integer: [" + sClientId + "]";
+			objLogger.error(sMethod + sMsg + "[" + objE.getMessage() + "]");
 			throw new BadParameterException(sMsg);
 		}
 

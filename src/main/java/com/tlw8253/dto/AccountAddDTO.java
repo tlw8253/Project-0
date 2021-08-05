@@ -20,11 +20,11 @@ public class AccountAddDTO extends AddDTO implements Constants {
 		return super.getDataElement(csAccountTblAccountNumber);		
 	}
 
-	public void setAccountName(String sAccountName) {
-		super.setDataElement(csAccountTblAccountName, sAccountName);		
+	public void setAccountType(String sAccountType) {
+		super.setDataElement(csAccountTblAccountType, sAccountType);		
 	}
-	public String getAccountName() {
-		return super.getDataElement(csAccountTblAccountName);		
+	public String getAccountType() {
+		return super.getDataElement(csAccountTblAccountType);		
 	}
 
 	public void setAccountBalance(String sAccountBalance) {
@@ -39,7 +39,7 @@ public class AccountAddDTO extends AddDTO implements Constants {
 		String sMethod = "toString(): ";
 		String sToString = "";
 		
-		sToString = super.toStringByKeys(csAccountTblAccountNumber, csAccountTblAccountName, csAccountTblAccountBalance, csClientTblClientId);
+		sToString = super.toStringByKeys(csAccountTblAccountNumber, csAccountTblAccountType, csAccountTblAccountBalance, csClientTblClientId);
 		objLogger.debug(sMethod + "sToString: [" + sToString + "]");
 		
 		return sToString;

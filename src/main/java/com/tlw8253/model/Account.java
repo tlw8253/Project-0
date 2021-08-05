@@ -9,7 +9,7 @@ public class Account {
 	private Logger objLogger = LoggerFactory.getLogger(Account.class);
 	
 	private String sAccountNumber = ""; //account number is the unique record id
-	private String sAccountName = "";
+	private String sAccountType = "";
 	private double dAccountBalance = 0.0;
 	private int iClientId = 0;
 	
@@ -17,21 +17,21 @@ public class Account {
 		super();
 	}
 
-	public Account(String sAccountNumber, String sAccountName, double dAccountBalance, int iClientId) {
+	public Account(String sAccountNumber, String sAccountType, double dAccountBalance, int iClientId) {
 		super();
 		
 		this.sAccountNumber = sAccountNumber;
-		this.sAccountName = sAccountName;
+		this.sAccountType = sAccountType;
 		this.dAccountBalance = dAccountBalance;
 		this.iClientId = iClientId;
 	}
 
-	public String getAccountName() {
-		return sAccountName;
+	public String getAccountType() {
+		return sAccountType;
 	}
 
-	public void setAccountName(String sAccountName) {
-		this.sAccountName = sAccountName;
+	public void setAccountType(String sAccountName) {
+		this.sAccountType = sAccountName;
 	}
 
 	public String getAccountNumber() {
@@ -62,7 +62,7 @@ public class Account {
 	
 	@Override
 	public int hashCode() {
-		return Objects.hash(dAccountBalance, iClientId, sAccountName, sAccountNumber);
+		return Objects.hash(dAccountBalance, iClientId, sAccountType, sAccountNumber);
 	}
 
 	@Override
@@ -75,7 +75,7 @@ public class Account {
 			return false;
 		Account other = (Account) obj;
 		return Double.doubleToLongBits(dAccountBalance) == Double.doubleToLongBits(other.dAccountBalance)
-				&& iClientId == other.iClientId && Objects.equals(sAccountName, other.sAccountName)
+				&& iClientId == other.iClientId && Objects.equals(sAccountType, other.sAccountType)
 				&& Objects.equals(sAccountNumber, other.sAccountNumber);
 	}
 
@@ -83,8 +83,8 @@ public class Account {
 	public String toString() {
 		String sMethod = "toString(): ";
 		
-		String sToString = "Account [sAccountNumber= [" + sAccountNumber + "], sAccountName= [" 
-							+ sAccountName + "], dAccountBalance= [" + dAccountBalance
+		String sToString = "Account [sAccountNumber= [" + sAccountNumber + "], sAccountType= [" 
+							+ sAccountType + "], dAccountBalance= [" + dAccountBalance
 							+ "] iClientId= [" + iClientId  + "]]";
 		objLogger.debug(sMethod + "[" + sToString + "]");
 		

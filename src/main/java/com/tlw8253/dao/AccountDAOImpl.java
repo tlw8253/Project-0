@@ -39,7 +39,7 @@ public class AccountDAOImpl implements GenericDAO<Account>, Constants {
 			while (objResultSet.next()) {// data exists in the results set
 				
 				String sAccountNumber = objResultSet.getString(csAccountTblAccountNumber);
-				String sAccountName = objResultSet.getString(csAccountTblAccountName);
+				String sAccountName = objResultSet.getString(csAccountTblAccountType);
 				double dAccountBalance = objResultSet.getDouble(csAccountTblAccountBalance);
 				int iClientId = objResultSet.getInt(csClientTblClientId);
 
@@ -72,7 +72,7 @@ public class AccountDAOImpl implements GenericDAO<Account>, Constants {
 			while (objResultSet.next()) {// data exists in the results set
 				
 				String sAccountNumber = objResultSet.getString(csAccountTblAccountNumber);
-				String sAccountName = objResultSet.getString(csAccountTblAccountName);
+				String sAccountName = objResultSet.getString(csAccountTblAccountType);
 				double dAccountBalance = objResultSet.getDouble(csAccountTblAccountBalance);
 				//int iClientId = objResultSet.getInt(csClientTblClientId); Don't need used passed in value
 
@@ -104,7 +104,7 @@ public class AccountDAOImpl implements GenericDAO<Account>, Constants {
 			if (objResultSet.next()) {// data exists in the results set
 				
 				String sAccountNumber = objResultSet.getString(csAccountTblAccountNumber);
-				String sAccountName = objResultSet.getString(csAccountTblAccountName);
+				String sAccountName = objResultSet.getString(csAccountTblAccountType);
 				double dAccountBalance = objResultSet.getDouble(csAccountTblAccountBalance);
 				int iClientId = objResultSet.getInt(csClientTblClientId);
 

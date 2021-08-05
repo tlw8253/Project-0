@@ -134,8 +134,7 @@ public class ClientDAOImpl implements Constants, ClientDAO {
 			
 			objLogger.debug(sMethod + "sSQL statement: [" + sSQL + "]");
 
-			PreparedStatement objPreparedStatmnt = conConnection.prepareStatement(sSQL,
-					Statement.RETURN_GENERATED_KEYS);
+			PreparedStatement objPreparedStatmnt = conConnection.prepareStatement(sSQL, Statement.RETURN_GENERATED_KEYS);
 			
 			String sFirstName = objAddClientDTO.getFirstName();
 			String sLastName = objAddClientDTO.getLastName();
@@ -147,8 +146,7 @@ public class ClientDAOImpl implements Constants, ClientDAO {
 
 			// Use executeUpdate when working with INSERT, UPDATE, or DELETE
 			int iRecsAdded = objPreparedStatmnt.executeUpdate();
-			// Use executeQuery() if you need a ResultSet (obviously coming from using
-			// SELECT)
+			// Use executeQuery() if you need a ResultSet (obviously coming from using SELECT)
 			if (iRecsAdded != 1) {
 				String sMsg = sMethod + "Error inserting new client record: [" + sFirstName + "]" + " ["
 						+ sLastName + "] [" + sNickname + "]";
@@ -203,8 +201,11 @@ public class ClientDAOImpl implements Constants, ClientDAO {
 				objLogger.warn(sMsg);
 				throw new SQLException(sMsg);
 			}
+			
+			Client objRetClient = new Client(iClientId, objEditClientDTO.getFirstName(), objEditClientDTO.getLastName(), objEditClientDTO.getNickname());
+			objLogger.debug(sMethod + "objRetClient: [" + objRetClient.toString() + "]");
 
-			return new Client(iClientId, objEditClientDTO.getFirstName(), objEditClientDTO.getLastName(), objEditClientDTO.getNickname());
+			return objRetClient;
 		}
 
 	}

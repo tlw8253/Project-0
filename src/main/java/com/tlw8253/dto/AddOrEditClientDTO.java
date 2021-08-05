@@ -11,6 +11,12 @@ public class AddOrEditClientDTO {
 	public AddOrEditClientDTO() {
 		super();
 	}
+	public AddOrEditClientDTO(String sFirstName, String sLastName, String sNickname) {
+		super();
+		this.sFirstName = sFirstName;
+		this.sLastName = sLastName;
+		this.sNickname = sNickname;		
+	}
 
 	public String getFirstName() {
 		return sFirstName;

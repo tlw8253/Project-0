@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import com.tlw8253.service.AccountService;
 import com.tlw8253.service.ClientService;
 import com.tlw8253.application.Constants;
+import com.tlw8253.dto.AddOrEditClientDTO;
 import com.tlw8253.model.Account;
 import com.tlw8253.model.Client;
 
@@ -18,20 +19,20 @@ import io.javalin.http.Handler;
 /**
  * From Project-0 requirements these are the expected requests and responses:
  * 
- * 	 * - `POST /clients`: Creates a new client
+ * 	 * -(COMPLETED) `POST /clients`: Creates a new client 
 	 * - `POST /clients/{client_id}/accounts`: Create a new account for a client with id of X (if client exists)
 	 * 
-	 * - `PUT /clients/{id}`: Update client with an id of X (if the client exists)
+	 * - (COMPLETED) `PUT /clients/{id}`: Update client with an id of X (if the client exists)
 	 * - `PUT /clients/{client_id}/accounts/{account_id}`: Update account with id of Y belonging to client with id of 
 	 * 		X (if client and account exist AND if account belongs to client)
 	 * 
-	 * - `DELETE /clients/{id}`: Delete client with an id of X (if the client exists)
+	 * - (COMPLETED) `DELETE /clients/{id}`: Delete client with an id of X (if the client exists)
 	 * - `DELETE /clients/{client_id}/accounts/{account_id}`: Delete account with id of Y belonging to 
 	 * 		client with id of X (if client and account exist AND if account belongs to client)
 	 * 
-	 * - `GET /clients`: Gets all clients
-	 * - `GET /clients/{id}`: Get client with an id of X (if the client exists)	 * 
-	 * - `GET /clients/{client_id}/accounts`: Get all accounts for client with id of X (if client exists)
+	 * -(COMPLETED) `GET /clients`: Gets all clients
+	 * -(COMPLETED) `GET /clients/{id}`: Get client with an id of X (if the client exists)	 * 
+	 * -(COMPLETED) `GET /clients/{client_id}/accounts`: Get all accounts for client with id of X (if client exists)
 	 * 
 	 * - `GET /clients/{client_id}/accounts?amountLessThan=2000&amountGreaterThan=400`: 
 	 * 		Get all accounts for client id of X with balances between 400 and 2000 (if client exists)
@@ -122,21 +123,122 @@ public class ClientController implements Controller, Constants {
 			//objCtx.json(lstAccounts);
 		}
 		else {
-			objCtx.status(ciStatusCodeErrorBadRequest);
-			
-		}
+			objCtx.status(ciStatusCodeErrorBadRequest);			
+		}		
 		
+	};
+	
+	//
+	//### - `POST /clients`: Creates a new client
+	private Handler postAddClient = (objCtx) -> {
+		String sMethod = "postAddClient(): ";
+		objLogger.trace(sMethod + "Entered");
+		
+		Map<String,String> mPathParmaMap =  objCtx.pathParamMap();
+		objLogger.debug(sMethod + "Context parameter map: [" + mPathParmaMap + "]");
+		
+		String sFirstName = objCtx.pathParam(csParamClientFirstName);
+		objLogger.debug(sMethod + "Context parameter " + csParamClientFirstName + ": [" + sFirstName + "]");
+		
+		String sLastName = objCtx.pathParam(csParamClientLastName);
+		objLogger.debug(sMethod + "Context parameter " + csParamClientLastName + ": [" + sLastName + "]");
+		
+		String sNickname = objCtx.pathParam(csParamClientNickname);
+		objLogger.debug(sMethod + "Context parameter " + csParamClientNickname + ": [" + sNickname + "]");
+		
+		AddOrEditClientDTO objClientToAdd = new AddOrEditClientDTO(sFirstName, sLastName, sNickname);
+		objLogger.debug(sMethod + "objClientToAdd: [" + objClientToAdd.toString() + "]");
+		
+		Client objAddedClient = objClientService.addClient(objClientToAdd);
+		objLogger.debug(sMethod + "objAddedClient: [" + objAddedClient.toString() + "]");
+		objCtx.json(objAddedClient);
+		
+
+		/*  GETTING: Couldn't deserialize body to AddClientDTO Error from Postman
+		AddClientDTO objClientToAdd = objCtx.bodyAsClass(AddClientDTO.class);
+		objLogger.debug(sMethod + "objClientToAdd" + objClientToAdd.toString());
+		*/
+		
+	};
+	
+	//
+	//### - `POST /clients`: Creates a new client
+	private Handler postUpdateClient = (objCtx) -> {
+		String sMethod = "postUpdateClient(): ";
+		objLogger.trace(sMethod + "Entered");
+		
+		Map<String,String> mPathParmaMap =  objCtx.pathParamMap();
+		objLogger.debug(sMethod + "Context parameter map: [" + mPathParmaMap + "]");
+		
+		String sClientId = objCtx.pathParam(csParamClientId);
+		objLogger.debug(sMethod + "Context parameter " + csParamClientId + ": [" + sClientId + "]");
+
+		String sFirstName = objCtx.pathParam(csParamClientFirstName);
+		objLogger.debug(sMethod + "Context parameter " + csParamClientFirstName + ": [" + sFirstName + "]");
+		
+		String sLastName = objCtx.pathParam(csParamClientLastName);
+		objLogger.debug(sMethod + "Context parameter " + csParamClientLastName + ": [" + sLastName + "]");
+		
+		String sNickname = objCtx.pathParam(csParamClientNickname);
+		objLogger.debug(sMethod + "Context parameter " + csParamClientNickname + ": [" + sNickname + "]");
+		
+		AddOrEditClientDTO objClientToUpdate = new AddOrEditClientDTO(sFirstName, sLastName, sNickname);
+		objLogger.debug(sMethod + "objClientToAdd: [" + objClientToUpdate.toString() + "]");
+		
+		Client objAddedClient = objClientService.editClient(sClientId, objClientToUpdate);
+		objLogger.debug(sMethod + "objAddedClient: [" + objAddedClient.toString() + "]");
+		objCtx.json(objAddedClient);
 		
 	};
 
+
+	//
+	//### `GET /clients/{id}`: Get client with an id of X (if the client exists)
+	private Handler deleteClientById = (objCtx) -> {		
+		String sMethod = "deleteClientById(): ";
+		objLogger.trace(sMethod + "Entered");
+
+		Map<String,String> mPathParmaMap =  objCtx.pathParamMap();
+		objLogger.debug(sMethod + "Context parameter map: [" + mPathParmaMap + "]");
+		
+		String sClientId = objCtx.pathParam(csParamClientId);
+		objLogger.debug(sMethod + "Context parameter client id: [" + sClientId + "]");		
+		
+		objClientService.deleteClient(sClientId);
+		//objLogger.debug(sMethod + "Client object from database: [" + objClient.toString() + "]");
+		
+		objCtx.status(ciStatusCodeSuccess);
+		objCtx.json("Client with id: [" + sClientId + "] removed from database.");
+	};
+
+	
+	
 	
 	@Override
 	public void mapEndpoints(Javalin app) {
 		app.get("/clients", getAllClients);	//`GET /clients`: Gets all clients
-		//`GET /clients/{client_id}`: Get client with an id of X (if the client exists)
+		//- `GET /clients/{client_id}`: Get client with an id of X (if the client exists)
 		app.get("/client/:" + csParamClientId, getClientById);	
-		//`GET /clients/{client_id}/accounts`: Get all accounts for client with id of X (if client exists)
+		//- `GET /clients/{client_id}/accounts`: Get all accounts for client with id of X (if client exists)
 		app.get("/client/:" + csParamClientId + "/:" + csParamAccounts, getClientAccounts);
+		
+		//- `POST /clients`: Creates a new client
+		app.post("/client/:"  + csClientTblFirstName 
+				+ "/:" + csClientTblLastName 
+				+ "/:" + csClientTblNickname
+		, postAddClient);
+		
+		//- `PUT /clients/{id}`: Update client with an id of X (if the client exists)
+		app.put("/client/:"  + csParamClientId
+				+ "/:" + csClientTblFirstName 
+				+ "/:" + csClientTblLastName 
+				+ "/:" + csClientTblNickname
+		, postUpdateClient);
+		
+		//- `DELETE /clients/{id}`: Delete client with an id of X (if the client exists)
+		app.delete("/client/:" + csParamClientId, deleteClientById);	
+		
+		
 		
 		/*
 		app.get("/ship", getAllShips);

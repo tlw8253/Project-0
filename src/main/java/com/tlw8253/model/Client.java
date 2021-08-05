@@ -31,6 +31,13 @@ public class Client {
 		this.sNickname = sNickname;		
 	}
 
+	public Client(String sFirstName, String sLastName, String sNickname) {
+		super();
+		this.sFirstName = sFirstName;
+		this.sLastName = sLastName;
+		this.sNickname = sNickname;		
+	}
+
 	//
 	//### getters & setters
 	public int getRecordId() {

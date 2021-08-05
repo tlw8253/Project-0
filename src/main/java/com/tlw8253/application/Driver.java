@@ -89,7 +89,7 @@ public class Driver implements Constants {
 		AccountAddDTO objAccountAddDTO = new AccountAddDTO();
 
 		objAccountAddDTO.setAccountNumber("07913");
-		objAccountAddDTO.setAccountName("My Account");
+		objAccountAddDTO.setAccountType("Checking");
 		objAccountAddDTO.setAccountBalance("5032.64");
 		objLogger.debug(sMethod + objAccountAddDTO.toString());
 	}
