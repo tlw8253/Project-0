@@ -48,6 +48,8 @@ public interface Constants {
 	int ciAccountTblAccountNumberLen = 5;
 	String csAccountTblAccountType = "acct_type";
 	String csAccountTblAccountBalance = "acct_balance";
+	String csAccountTypeValueChecking = "CHECKING";
+	String csAccountTypeValueSavings = "SAVINGS";
 	
 	//HTTP request parameter constants
 	String csParamClientId = csClientTblClientId; 
@@ -57,6 +59,8 @@ public interface Constants {
 	
 	String csParamAccounts = "accounts";	//request parameter used in conjunction with id to get all accounts
 	String csParamAccountNumber = csAccountTblAccountNumber;
+	String csParamAccountType = csAccountTblAccountType;
+	String csParamAccountBalance = csAccountTblAccountBalance;
 	String csParamAccountsLessThan = "acct_less_than";
 	String csParamAccountsGreaterThan = "acct_greater_than";
 

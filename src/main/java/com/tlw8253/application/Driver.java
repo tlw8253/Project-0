@@ -60,14 +60,35 @@ public class Driver implements Constants {
 
 		// testGenericAddDTO();
 		//testAccountAddDTO();
-		testAccountDAOImpl();
+		//testAccountDAOImplGetAllRecords();
+		testAccountDAOImplAddRecord();
 
 	}
 
 	//
 	// ###
-	public static void testAccountDAOImpl() {
-		String sMethod = "testAccountDAOImpl(): ";
+	public static void testAccountDAOImplAddRecord() {
+		String sMethod = "testAccountDAOImplAddRecord(): ";
+		AccountDAOImpl objAccountDAOImpl = new AccountDAOImpl();
+		AccountAddDTO objAccountAddDTO = new AccountAddDTO("80000", csAccountTypeValueSavings, "1158.21", "4");
+		objAccountAddDTO.setAccountBalance(1158.21);
+		objAccountAddDTO.setClientId(4);
+
+		try {
+			Account objAccounts = objAccountDAOImpl.addRecord(objAccountAddDTO);
+
+				objLogger.debug(sMethod + "Account returned by objAccountDAOImpl.addRecord():[" + objAccounts.toString() + "]");
+
+		} catch (Exception objE) {
+			objLogger.error(sMethod + "Exception: [" + objE.getMessage() + "]");
+		}
+	}
+
+	
+	//
+	// ###
+	public static void testAccountDAOImplGetAllRecords() {
+		String sMethod = "testAccountDAOImplGetAllRecords(): ";
 		AccountDAOImpl objAccountDAOImpl = new AccountDAOImpl();
 
 		try {

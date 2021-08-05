@@ -36,9 +36,9 @@ public class ClientService {
 			lstClients = objClientDAO.getAllClients();
 
 		} catch (SQLException objE) {
-			String sMsg = sMethod + "Error with database getting all clients.";
-			objLogger.error(sMsg);
-			throw new DatabaseException(sMsg);
+			String sMsg = "Error with database getting all clients.";
+			objLogger.error(sMethod + sMsg);
+			throw new DatabaseException(sMsg); //need to have static message for JUnit testing
 		}
 		return (lstClients);
 	}
@@ -55,18 +55,18 @@ public class ClientService {
 			if (objClient == null) {
 				String sMsg = sMethod + "Client with id: [" + iClientId + "] not found in the database.";
 				objLogger.info(sMsg);
-				throw new ClientNotFoundException(sMsg);
+				throw new ClientNotFoundException("Client was not found in the database."); //need to have static message for JUnit testing
 			}
 			return (objClient);
 		} catch (SQLException objE) {
-			String sMsg = sMethod + "Database error getting the client by id.";
-			objLogger.error(sMsg + "[" + objE.getMessage() + "]");
+			String sMsg = "Database error getting the client by id.";
+			objLogger.error(sMethod + sMsg + "[" + objE.getMessage() + "]");
 			throw new DatabaseException(sMsg);
 		} catch (NumberFormatException objE) {
 
-			String sMsg = sMethod + "Client Id: [" + sClientId + "] is not an integer.";
-			objLogger.debug(sMsg + "[" + objE.getMessage() + "]");
-			throw new BadParameterException(sMsg);
+			String sMsg = "Client Id: [" + sClientId + "] is not an integer.";
+			objLogger.debug(sMethod + sMsg + "[" + objE.getMessage() + "]");
+			throw new BadParameterException("Client Id is not an integer"); //need to have static message for JUnit testing
 		}
 
 	}
@@ -79,11 +79,11 @@ public class ClientService {
 		//check first and last name for values, nickname is not required
 		if (objAddClientDTO.getFirstName().trim().equals("") || 
 				objAddClientDTO.getLastName().trim().equals("")) {
-			String sMsg = sMethod + "Client name must not contain a blank: first name: [" + objAddClientDTO.getFirstName()
+			String sMsg = "Client name must not contain a blank: first name: [" + objAddClientDTO.getFirstName()
 					+ "]" + " last name [" + objAddClientDTO.getLastName() + "]";
-			objLogger.debug(sMsg);
+			objLogger.debug(sMethod + sMsg);
 
-			throw new BadParameterException(sMsg);
+			throw new BadParameterException("Client first and last name must contain values.");//need to have static message for JUnit testing
 		}
 
 		try {
@@ -94,7 +94,7 @@ public class ClientService {
 			String sMsg = "Database error adding client: first name: [" + objAddClientDTO.getFirstName() + "]"
 					+ " last name [" + objAddClientDTO.getLastName() + "]";
 			objLogger.error(sMethod + sMsg + "[" + objE.getMessage() + "]");
-			throw new DatabaseException(sMsg);
+			throw new DatabaseException("Database error when adding a client."); //need to have static message for JUnit testing
 		}
 
 	}
@@ -119,15 +119,17 @@ public class ClientService {
 			// record found, update the Client
 			Client objEditedClient = objClientDAO.editClient(iClientId, objEditClientDTO);
 			return objEditedClient;
+			
 		} catch (SQLException objE) {
 			sMsg = "Database error updating client: first name: [" + objEditClientDTO.getFirstName() + "]"
 					+ " last name [" + objEditClientDTO.getLastName() + "]";
 			objLogger.error(sMethod + sMsg + "[" + objE.getMessage() + "]");
-			throw new DatabaseException(sMsg);
+			throw new DatabaseException("Database error updating a client."); //need to have static message for JUnit testing
+			
 		} catch (NumberFormatException objE) {
 			sMsg = "Client Id is not an integer: [" + sClientId + "]";
 			objLogger.error(sMethod + sMsg + "[" + objE.getMessage() + "]");
-			throw new BadParameterException(sMsg);
+			throw new BadParameterException("Client Id is not an integer."); //need to have static message for JUnit testing
 		}
 
 	}
@@ -144,21 +146,22 @@ public class ClientService {
 
 			// Client must exist to delete if client does not exist, throw an Exception
 			if (objClientDAO.getClientById(iClientId) == null) {
-				sMsg = sMethod + "Client with id: [" + iClientId + "] was not found, unable to delete.";
-				objLogger.debug(sMsg);
-				throw new ClientNotFoundException(sMsg);
+				sMsg = "Client with id: [" + iClientId + "] was not found, unable to delete.";
+				objLogger.debug(sMethod + sMsg);
+				throw new ClientNotFoundException("Client was not in database for deleting."); //need to have static message for JUnit testing
 			}
 
 			// record found, delete the Client
 			objClientDAO.deleteClient(iClientId);
 		} catch (SQLException objE) {
-			sMsg = sMethod + "Database error deleting client with id: [" + sClientId + "]";
-			objLogger.error(sMsg + "[" + objE.getMessage() + "]");
-			throw new DatabaseException(sMsg);
+			sMsg = "Database error deleting client with id: [" + sClientId + "]";
+			objLogger.error(sMethod + sMsg + "[" + objE.getMessage() + "]");
+			throw new DatabaseException("Database error deleting a client."); //need to have static message for JUnit testing
+			
 		} catch (NumberFormatException objE) {
 			sMsg = sMethod + "Client Id is not an integer: [" + sClientId + "]";
-			objLogger.error(sMsg + "[" + objE.getMessage() + "]");
-			throw new BadParameterException(sMsg);
+			objLogger.error(sMethod + sMsg + "[" + objE.getMessage() + "]");
+			throw new BadParameterException("Client Id is not an integer."); //need to have static message for JUnit testing
 		}
 
 	}

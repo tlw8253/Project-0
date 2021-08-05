@@ -42,8 +42,6 @@ public class Application implements Constants {
 		String sMethod = "main(): ";
 		
 		objLogger.trace(sMethod + "Entered");
-		objLogger.debug(sMethod + "Entered");
-		objLogger.info(sMethod + "Entered");
 		
 		objJavalinApp = Javalin.create();
 		mapControllers(/*new TestController(),*/ new ClientController(), new ExceptionController(), new AccountController());

@@ -1,9 +1,9 @@
 package com.tlw8253.dto;
 
 import java.util.HashMap;
-import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
+import java.lang.Integer;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,60 +13,58 @@ import org.slf4j.LoggerFactory;
 public class AddDTO {
 	private Logger objLogger = LoggerFactory.getLogger(AddDTO.class);
 	
-	HashMap<String, String> hmDataElements; //expected format: <databaseTable.column>,<value> 
+	//every data element should be in the hmStringDataElements for up front validation
+	//then stored in its destination format after validation
+	HashMap<String, String> hmStringDataElements; //expected format: <databaseTable.column>,<string value> 
+	HashMap<String, Integer> hmIntegerDataElements; //expected format: <databaseTable.column>,<integer value>
+	HashMap<String, Double> hmDoubleDataElements; //expected format: <databaseTable.column>,<double value>
+	
 	
 	public AddDTO() {
 		super();
-		hmDataElements = new HashMap<String, String>();
+		hmStringDataElements = new HashMap<String, String>();
+		hmIntegerDataElements = new HashMap<String, Integer>();
+		hmDoubleDataElements = new HashMap<String, Double>();
 	}
+	
 	
 	public AddDTO(HashMap<String, String> hmDataElements) {
 		super();
-		this.hmDataElements = hmDataElements;
-	}
-
-	public String getDataElement(String sElementName) {
-		return (hmDataElements.get(sElementName));
-	}
-
-	public void setDataElement(String sElementName, String sElementValue) {
-		hmDataElements.put(sElementName, sElementValue);
+		this.hmStringDataElements = hmDataElements;
 	}
 
 	
-	@Override
-	public int hashCode() {
-		return Objects.hash(hmDataElements);
+	
+	
+	public String getDataElement(String sElementName) {
+		return (hmStringDataElements.get(sElementName));
+	}
+	public double getDoubleDataElement(String sElementName) {
+		return (hmDoubleDataElements.get(sElementName).doubleValue());
+	}
+	public int getIntDataElement(String sElementName) {
+		return (hmIntegerDataElements.get(sElementName).intValue());
 	}
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		AddDTO other = (AddDTO) obj;
-		return Objects.equals(hmDataElements, other.hmDataElements);
+	
+	
+	
+	public void setDataElement(String sElementName, String sElementValue) {
+		hmStringDataElements.put(sElementName, sElementValue);
+	}
+	public void setDataElement(String sElementName, int iElementValue) {
+		hmIntegerDataElements.put(sElementName, Integer.valueOf(iElementValue));
+	}
+	public void setDataElement(String sElementName, double dElementValue) {
+		hmDoubleDataElements.put(sElementName, Double.valueOf(dElementValue));
 	}
 
-	@Override
-	public String toString() {
-		String sMethod = "toString(): ";
-		TreeSet<String> treeSetSortedKeys = getSortedKeys();
-		String sToString = "";
-		
-		for (String sKey : treeSetSortedKeys) {
-			sToString += "[" + sKey + "]: [" + hmDataElements.get(sKey) + "]";
-		}
-		objLogger.debug(sMethod + "sToString: [" + sToString + "]");
-		
-		return sToString;
-	}
+	
 	
 	//
-	//### create retrun string in specific order of keys passed in
+	//### create return string in specific order of keys passed in
+	//		Only use the String data elements, since all other types should 
+	//		have a string counterpart.
 	public String toStringByKeys(String... sKey) {//Varargs parameter list
 		String sMethod = "toStringByKeys(): ";
 		String sToString = "";
@@ -75,7 +73,7 @@ public class AddDTO {
 			String sThisKey = sKey[iCtr];
 			objLogger.debug(sMethod + "sKey[" + sKey + "]: [" + sKey[iCtr] + "]" );
 			
-			sToString += "[" + sThisKey + "]: [" + hmDataElements.get(sThisKey) + "] ";			
+			sToString += "[" + sThisKey + "]: [" + hmStringDataElements.get(sThisKey) + "] ";			
 		}
 		objLogger.debug(sMethod + "sToString: [" + sToString + "]");		
 		
@@ -87,7 +85,7 @@ public class AddDTO {
 	private TreeSet<String> getSortedKeys(){
 		String sMethod = "getSortedKeys(): ";		
 
-		Set<String> setKeys = hmDataElements.keySet();
+		Set<String> setKeys = hmStringDataElements.keySet();
 		TreeSet<String> treeSetKeys = new TreeSet<String>(setKeys);
 		
 		objLogger.debug(sMethod + "treeSetKeys: [" + treeSetKeys.toString() + "]");

@@ -26,7 +26,7 @@ public class ConnectionUtility {
 		String sPassword = System.getenv("p0_db_password");
 		//sPassword = "bogus";	//used for exception testing
 		
-		objLogger.info(sMethod + "Attempting database connection: URL: [" + sURL + "] username: [" + sUsername + "]");
+		objLogger.debug(sMethod + "Attempting database connection: URL: [" + sURL + "] username: [" + sUsername + "]");
 		Connection conConnection = DriverManager.getConnection(sURL, sUsername, sPassword);
 			
 		return(conConnection);

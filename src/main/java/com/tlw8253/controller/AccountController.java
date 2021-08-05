@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.tlw8253.application.Constants;
+import com.tlw8253.dto.AccountAddDTO;
 import com.tlw8253.model.Account;
 import com.tlw8253.service.AccountService;
 import com.tlw8253.service.ClientService;
@@ -25,7 +26,7 @@ public class AccountController implements Controller, Constants{
 
 	
 	//
-	//### 
+	//### GET /accounts - get all accounts for all clients
 	private Handler getAllAccounts = (objCtx) -> {	
 		String sMethod = "getAllAccounts(): ";
 		objLogger.trace(sMethod + "Entered");
@@ -79,6 +80,40 @@ public class AccountController implements Controller, Constants{
 		objCtx.json(lstAccount);
 	};
 
+	//
+	//### POST /account/account information to create
+	private Handler postAddAccoutForClient = (objCtx) -> {	
+		String sMethod = "postAddAccoutForClient(): ";
+		objLogger.trace(sMethod + "Entered");
+
+		Map<String,String> mPathParmaMap =  objCtx.pathParamMap();
+		objLogger.debug(sMethod + "Context parameter map: [" + mPathParmaMap + "]");
+		
+		String sClientId = objCtx.pathParam(csClientTblClientId);
+		objLogger.debug(sMethod + "Context parameter client identifier: [" + sClientId + "]");		
+
+		String sAccountNumber = objCtx.pathParam(csParamAccountNumber);
+		objLogger.debug(sMethod + "Context parameter account identifier: [" + sAccountNumber + "]");		
+
+		String sAccountType = objCtx.pathParam(csParamAccountType);
+		objLogger.debug(sMethod + "Context parameter account type: [" + sAccountType + "]");
+		
+		String sAccountBalance = objCtx.pathParam(csParamAccountBalance);
+		objLogger.debug(sMethod + "Context parameter account type: [" + sAccountNumber + "]");
+		
+		AccountAddDTO objAccountAddDTO = new AccountAddDTO();
+		
+		objAccountAddDTO.setAccountNumber(sAccountNumber);
+		objAccountAddDTO.setAccountType(sAccountType);
+		objAccountAddDTO.setAccountBalance(sAccountBalance);	
+		objAccountAddDTO.setClientId(sClientId);
+		
+		Account objAccount = objAccountService.addAccountForClient(objAccountAddDTO);
+		objLogger.debug(sMethod + "objAccount: [" + objAccount.toString() + "]");
+		
+		objCtx.status(ciStatusCodeSuccess);
+		objCtx.json(objAccount);
+	};
 
 	
 	@Override
@@ -86,7 +121,14 @@ public class AccountController implements Controller, Constants{
 		app.get("/accounts", getAllAccounts);	//Not a MVP item
 		app.get("/account/:" + csParamAccountNumber, getAccountByAccountNumber);	//Not a MVP item
 		app.get("/accounts/:" + csParamClientId, getAccountsForClient);	//Not a MVP item
-		app.get("/accounts/:" + csParamClientId + "/:", getAccountsForClient);	//Not a MVP item
+
+		
+		app.post("/account/:" + csParamClientId 
+								+ "/:" + csParamAccountNumber 
+								+ "/:" + csParamAccountType 
+								+ "/:" + csParamAccountBalance, 
+								postAddAccoutForClient);	//Not a MVP item
+	
 		
 	}
 

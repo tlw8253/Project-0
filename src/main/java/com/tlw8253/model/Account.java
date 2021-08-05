@@ -17,6 +17,21 @@ public class Account {
 		super();
 	}
 
+	public Account(String sAccountNumber, String sAccountType) {
+		super();
+		
+		this.sAccountNumber = sAccountNumber;
+		this.sAccountType = sAccountType;
+	}
+
+	public Account(String sAccountNumber, String sAccountType, double dAccountBalance) {
+		super();
+		
+		this.sAccountNumber = sAccountNumber;
+		this.sAccountType = sAccountType;
+		this.dAccountBalance = dAccountBalance;
+	}
+
 	public Account(String sAccountNumber, String sAccountType, double dAccountBalance, int iClientId) {
 		super();
 		

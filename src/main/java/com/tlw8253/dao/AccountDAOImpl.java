@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.tlw8253.application.Constants;
+import com.tlw8253.dto.AccountAddDTO;
 import com.tlw8253.dto.AddDTO;
 import com.tlw8253.dto.EditDTO;
 import com.tlw8253.model.Account;
@@ -23,125 +24,167 @@ public class AccountDAOImpl implements GenericDAO<Account>, Constants {
 	public AccountDAOImpl() {
 		super();
 	}
-	
+
 	public List<Account> getAllRecords() throws SQLException {
 		String sMethod = "getAllRecords(): ";
 		objLogger.trace(sMethod + "Entered");
-		
+
 		List<Account> lstAccount = new ArrayList<>();
 
 		try (Connection conConnection = ConnectionUtility.getConnection()) {
 			Statement objStatement = conConnection.createStatement();
 			String sSQL = "SELECT * FROM " + csAccountTable;
 			objLogger.debug(sMethod + "sSQL statement: [" + sSQL + "]");
-			
+
 			ResultSet objResultSet = objStatement.executeQuery(sSQL);
 			while (objResultSet.next()) {// data exists in the results set
-				
+
 				String sAccountNumber = objResultSet.getString(csAccountTblAccountNumber);
 				String sAccountName = objResultSet.getString(csAccountTblAccountType);
 				double dAccountBalance = objResultSet.getDouble(csAccountTblAccountBalance);
 				int iClientId = objResultSet.getInt(csClientTblClientId);
 
 				Account objAccount = new Account(sAccountNumber, sAccountName, dAccountBalance, iClientId);
-				objLogger.info(sMethod + "Add account to list: [" + objAccount.toString() + "]");
+				objLogger.debug(sMethod + "Add account to list: [" + objAccount.toString() + "]");
 				lstAccount.add(objAccount);
-			}			
+			}
 		}
 		return lstAccount;
 	}
-	
+
 	//
-	//###
+	// ###
 	public List<Account> getAccountsForClient(int iClientId) throws SQLException {
 		String sMethod = "getAccountsForClient(): ";
 		objLogger.trace(sMethod + "Entered");
-		
+
 		List<Account> lstAccount = new ArrayList<>();
 
 		try (Connection conConnection = ConnectionUtility.getConnection()) {
-			
-			
+
 			String sSQL = "SELECT * FROM " + csAccountTable + " WHERE " + csClientTblClientId + " = ?";
 			objLogger.debug(sMethod + "sSQL statement: [" + sSQL + "] using client id: [" + iClientId + "]");
-			
+
 			PreparedStatement objPreparedStatmnt = conConnection.prepareStatement(sSQL);
 			objPreparedStatmnt.setInt(1, iClientId); // set passed in client id in place of ?
-			
+			objLogger.debug(sMethod + "objPreparedStatmnt: [" + objPreparedStatmnt.toString() + "]");
+
 			ResultSet objResultSet = objPreparedStatmnt.executeQuery();
 			while (objResultSet.next()) {// data exists in the results set
-				
+
 				String sAccountNumber = objResultSet.getString(csAccountTblAccountNumber);
 				String sAccountName = objResultSet.getString(csAccountTblAccountType);
 				double dAccountBalance = objResultSet.getDouble(csAccountTblAccountBalance);
-				//int iClientId = objResultSet.getInt(csClientTblClientId); Don't need used passed in value
+				// int iClientId = objResultSet.getInt(csClientTblClientId); Don't need used
+				// passed in value
 
 				Account objAccount = new Account(sAccountNumber, sAccountName, dAccountBalance, iClientId);
-				objLogger.info(sMethod + "Add account to client's list: [" + objAccount.toString() + "]");
+				objLogger.debug(sMethod + "Add account to client's list: [" + objAccount.toString() + "]");
 				lstAccount.add(objAccount);
-			}			
+			}
 		}
 		return lstAccount;
 	}
-	
 
 	//
-	//### Record Identifier is used as a string for account table
-	public Account getByRecordIdentifer(String sRecordIdentifier) throws SQLException{
+	// ### Record Identifier is used as a string for account table
+	public Account getByRecordIdentifer(String sRecordIdentifier) throws SQLException {
 		String sMethod = "getByRecordIdentifer(): ";
-		objLogger.trace(sMethod + "Entered");	
-				
+		objLogger.trace(sMethod + "Entered");
+
 		try (Connection conConnection = ConnectionUtility.getConnection()) {
 			String sSQL = "SELECT * FROM " + csAccountTable + " WHERE " + csAccountTblAccountNumber + " = ?";
-			objLogger.debug(sMethod + "sSQL statement: [" + sSQL + "] using sRecordIdentifier: [" + sRecordIdentifier + "]");
-			
-			
+			objLogger.debug(
+					sMethod + "sSQL statement: [" + sSQL + "] using sRecordIdentifier: [" + sRecordIdentifier + "]");
+
 			PreparedStatement objPreparedStatmnt = conConnection.prepareStatement(sSQL);
 			objPreparedStatmnt.setString(1, sRecordIdentifier); // set passed in record id in place of ?
-			
-			ResultSet objResultSet = objPreparedStatmnt.executeQuery();	
-						
+			objLogger.debug(sMethod + "objPreparedStatmnt: [" + objPreparedStatmnt.toString() + "]");
+
+			ResultSet objResultSet = objPreparedStatmnt.executeQuery();
+
 			if (objResultSet.next()) {// data exists in the results set
-				
+
 				String sAccountNumber = objResultSet.getString(csAccountTblAccountNumber);
 				String sAccountName = objResultSet.getString(csAccountTblAccountType);
 				double dAccountBalance = objResultSet.getDouble(csAccountTblAccountBalance);
 				int iClientId = objResultSet.getInt(csClientTblClientId);
 
 				Account objAccount = new Account(sAccountNumber, sAccountName, dAccountBalance, iClientId);
-				objLogger.info(sMethod + "Account record from database: [" + objAccount.toString() + "]");
-				
+				objLogger.debug(sMethod + "Account record from database: [" + objAccount.toString() + "]");
+
 				return objAccount;
-				
-			}
-			else {
-				objLogger.debug(sMethod + "Account with identifier: [" + sRecordIdentifier + "] not found in database.");
+
+			} else {
+				objLogger
+						.debug(sMethod + "Account with identifier: [" + sRecordIdentifier + "] not found in database.");
 				return null;
 			}
 		}
-		
-		
 	}
-	
-	
-	public Account addRecord(AddDTO objGenericAddDTO) throws SQLException{
-		Account objAccount = new Account();
-		
-		return objAccount;
+
+	//
+	// ### not using the addRecord from the interface, we want to use the
+	// Account DTO and not the AddDTO
+	public Account addRecord(AccountAddDTO objAccountAddDTO) throws SQLException {
+		String sMethod = "addRecord(AccountAddDTO): ";
+		objLogger.trace(sMethod + "Entered");
+
+		String sAccountNumber = objAccountAddDTO.getAccountNumber();
+		String sAccountType = objAccountAddDTO.getAccountType();
+		double dAccountBalance = objAccountAddDTO.getAccountBalanceAsDouble();
+		int iClientId = objAccountAddDTO.getClientIdAsInt();
+
+		try (Connection conConnection = ConnectionUtility.getConnection()) {
+
+			String sSQL = "INSERT INTO " + csAccountTable + " (" + csAccountTblAccountNumber + ", "
+					+ csAccountTblAccountType + ", " + csAccountTblAccountBalance + ", " + csClientTblClientId
+					+ ") VALUES (?, ?, ?, ?)";
+
+			objLogger.debug(sMethod + "sSQL statement: [" + sSQL + "]");
+
+			PreparedStatement objPreparedStatmnt = conConnection.prepareStatement(sSQL);
+			objPreparedStatmnt.setString(1, sAccountNumber);
+			objPreparedStatmnt.setString(2, sAccountType);
+			objPreparedStatmnt.setDouble(3, dAccountBalance);
+			objPreparedStatmnt.setInt(4, iClientId);
+
+			objLogger.debug(sMethod + "objPreparedStatmnt: [" + objPreparedStatmnt.toString() + "]");
+
+			// Use executeUpdate when working with INSERT, UPDATE, or DELETE
+			int iRecsAdded = objPreparedStatmnt.executeUpdate();
+
+			if (iRecsAdded != 1) {
+				String sMsg = "Account record not added to database: [" + objAccountAddDTO.toStringByKeys() + "]";
+				objLogger.debug(sMethod + sMsg);
+				throw new SQLException(sMsg);
+			} else {
+
+				Account objAccount = new Account(sAccountNumber, sAccountType, dAccountBalance, iClientId);
+				objLogger.debug(
+						sMethod + "Account record created. Retrieved from database: [" + objAccount.toString() + "]");
+
+				return objAccount;
+			}
+
+		}
 	}
-	
-	
-	public Account editRecord(String sRecordIdentifier, EditDTO objGenericEditDTO) throws SQLException{
+
+	public Account editRecord(String sRecordIdentifier, EditDTO objGenericEditDTO) throws SQLException {
 		Account objAccount = new Account();
-		
+
 		return objAccount;
 
 	}
-	
-	
-	public void deleteRecord(String sRecordIdentifier) throws SQLException{
-		
+
+	public void deleteRecord(String sRecordIdentifier) throws SQLException {
+
 	}
-	
-	
+
+	@Override
+	public Account addRecord(AddDTO objGenericAddDTO) throws SQLException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

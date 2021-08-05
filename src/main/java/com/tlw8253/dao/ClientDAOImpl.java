@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 
 import com.tlw8253.application.Constants;
 import com.tlw8253.dto.AddOrEditClientDTO;
+import com.tlw8253.model.Account;
 import com.tlw8253.model.Client;
 import com.tlw8253.util.ConnectionUtility;
 
@@ -72,7 +73,15 @@ public class ClientDAOImpl implements Constants, ClientDAO {
 				String sNickname = objResultSet.getString(csClientTblNickname);
 
 				Client objClient = new Client(iClientId, sFirstName, sLastName, sNickname);
-				objLogger.info(sMethod + "Add client to list: [" + objClient.toString() + "]");
+				objLogger.debug(sMethod + "Client object without accounts: [" + objClient.toString() + "]");
+				
+				//5. now get all accounts for this client
+				AccountDAOImpl objAccountDAOImpl = new AccountDAOImpl();
+				List<Account> lstAccounts = objAccountDAOImpl.getAccountsForClient(iClientId);
+				objLogger.debug(sMethod + "Account list for this client: [" + lstAccounts.toString() + "]");
+				objClient.setAccounts(lstAccounts);  //set all accounts for this client
+				
+				objLogger.debug(sMethod + "Adding Client object with accounts to list of clients: [" + objClient.toString() + "]");
 				lstClients.add(objClient);
 			}
 		}
@@ -94,8 +103,8 @@ public class ClientDAOImpl implements Constants, ClientDAO {
 			objLogger.debug(sMethod + "sSQL statement: [" + sSQL + "]");
 
 			PreparedStatement objPreparedStatmnt = conConnection.prepareStatement(sSQL);
-
 			objPreparedStatmnt.setInt(1, iClientId); // set passed in client id in place of ?
+			objLogger.debug(sMethod + "objPreparedStatmnt: [" + objPreparedStatmnt.toString() + "]");
 
 			// Execute the query
 			ResultSet objResultSet = objPreparedStatmnt.executeQuery();
@@ -109,8 +118,16 @@ public class ClientDAOImpl implements Constants, ClientDAO {
 				String sNickname = objResultSet.getString(csClientTblNickname);
 
 				Client objClient = new Client(iRecordId, sFirstName, sLastName, sNickname);
-
-				objLogger.debug(sMethod + "Return Client: [" + objClient.toString() + "].");
+				objLogger.debug(sMethod + "Client without their account(s): [" + objClient.toString() + "].");
+				
+				//get the account(s) for this client
+				AccountDAOImpl objAccountDAOImpl = new AccountDAOImpl();
+				List<Account> lstAccounts = objAccountDAOImpl.getAccountsForClient(iClientId);
+				objLogger.debug(sMethod + "Account list for this client: [" + lstAccounts.toString() + "]");
+				objClient.setAccounts(lstAccounts);  //set all accounts for this client
+				
+				
+				objLogger.debug(sMethod + "Return Client with account(s): [" + objClient.toString() + "].");
 				return (objClient);
 			} else {
 				objLogger.debug(sMethod + "Client with id: [" + iClientId + "] not found in database.");
@@ -143,6 +160,7 @@ public class ClientDAOImpl implements Constants, ClientDAO {
 			objPreparedStatmnt.setString(1, sFirstName);
 			objPreparedStatmnt.setString(2, sLastName);
 			objPreparedStatmnt.setString(3, sNickname);
+			objLogger.debug(sMethod + "objPreparedStatmnt: [" + objPreparedStatmnt.toString() + "]");
 
 			// Use executeUpdate when working with INSERT, UPDATE, or DELETE
 			int iRecsAdded = objPreparedStatmnt.executeUpdate();
@@ -194,6 +212,7 @@ public class ClientDAOImpl implements Constants, ClientDAO {
 			objPreparedStatmnt.setString(2, objEditClientDTO.getLastName());
 			objPreparedStatmnt.setString(3, objEditClientDTO.getNickname());
 			objPreparedStatmnt.setInt(4, iClientId);
+			objLogger.debug(sMethod + "objPreparedStatmnt: [" + objPreparedStatmnt.toString() + "]");
 
 			int iRecUpdated = objPreparedStatmnt.executeUpdate();
 			if (iRecUpdated != 1) {
@@ -224,6 +243,7 @@ public class ClientDAOImpl implements Constants, ClientDAO {
 			objLogger.debug(sMethod + "sSQL statement: [" + sSQL + "]");
 
 			PreparedStatement objPreparedStatmnt = conConnection.prepareStatement(sSQL);
+			objLogger.debug(sMethod + "objPreparedStatmnt: [" + objPreparedStatmnt.toString() + "]");
 
 			objPreparedStatmnt.setInt(1, iClientId);
 

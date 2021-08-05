@@ -75,7 +75,7 @@ public class Client {
 	public List<Account> getAccounts(){
 		return this.lstAccounts;
 	}
-	public void set(List<Account> lstAccounts) {
+	public void setAccounts(List<Account> lstAccounts) {
 		this.lstAccounts =lstAccounts;
 	}
 	

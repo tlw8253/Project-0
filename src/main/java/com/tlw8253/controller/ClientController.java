@@ -116,7 +116,7 @@ public class ClientController implements Controller, Constants {
 			List<Account> lstAccounts = objAccountService.getAccountsForClient(objClient.getRecordId()); 
 			objLogger.debug(sMethod + "Client accounts from AccountSerice: [" + lstAccounts.toString() + "]");
 			
-			objClient.set(lstAccounts); // add accounts in client for the json response
+			objClient.setAccounts(lstAccounts); // add accounts in client for the json response
 			
 			objCtx.status(ciStatusCodeSuccess);
 			objCtx.json(objClient);	//send client object with accounts
@@ -154,7 +154,7 @@ public class ClientController implements Controller, Constants {
 		objCtx.json(objAddedClient);
 		
 
-		/*  GETTING: Couldn't deserialize body to AddClientDTO Error from Postman
+		/*  Problem: Couldn't deserialize body to AddClientDTO Error shown in Postman
 		AddClientDTO objClientToAdd = objCtx.bodyAsClass(AddClientDTO.class);
 		objLogger.debug(sMethod + "objClientToAdd" + objClientToAdd.toString());
 		*/
@@ -204,8 +204,8 @@ public class ClientController implements Controller, Constants {
 		String sClientId = objCtx.pathParam(csParamClientId);
 		objLogger.debug(sMethod + "Context parameter client id: [" + sClientId + "]");		
 		
-		objClientService.deleteClient(sClientId);
-		//objLogger.debug(sMethod + "Client object from database: [" + objClient.toString() + "]");
+		objLogger.debug(sMethod + "Calling to delete from dabase with client id: [" + sClientId + "]");	
+		objClientService.deleteClient(sClientId);		
 		
 		objCtx.status(ciStatusCodeSuccess);
 		objCtx.json("Client with id: [" + sClientId + "] removed from database.");
