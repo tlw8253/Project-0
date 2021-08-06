@@ -53,7 +53,7 @@ public class Driver implements Constants {
 		// Test database access for Client
 		// getAllCients();
 		// getCientById("1");
-		// addClient();
+		 addClient();
 		// editClient();
 		// deleteClient();
 		// getAllCients();
@@ -61,7 +61,7 @@ public class Driver implements Constants {
 		// testGenericAddDTO();
 		//testAccountAddDTO();
 		//testAccountDAOImplGetAllRecords();
-		testAccountDAOImplAddRecord();
+		//testAccountDAOImplAddRecord();
 
 	}
 

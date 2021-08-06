@@ -11,8 +11,8 @@ public class AddOrEditClientDTO {
 	public AddOrEditClientDTO() {
 		super();
 	}
+	
 	public AddOrEditClientDTO(String sFirstName, String sLastName, String sNickname) {
-		super();
 		this.sFirstName = sFirstName;
 		this.sLastName = sLastName;
 		this.sNickname = sNickname;		
@@ -58,6 +58,11 @@ public class AddOrEditClientDTO {
 			return false;
 		AddOrEditClientDTO other = (AddOrEditClientDTO) obj;
 		return Objects.equals(sFirstName, other.sFirstName) && Objects.equals(sLastName, other.sLastName);
+	}
+	@Override
+	public String toString() {
+		return "AddOrEditClientDTO [sFirstName=" + sFirstName + ", sLastName=" + sLastName + ", sNickname=" + sNickname
+				+ "]";
 	}
 
 	
