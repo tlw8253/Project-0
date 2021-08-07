@@ -23,7 +23,10 @@ public interface Constants {
 	int ciStatusCodeSuccessNoContent = 204;		//There is no content to send for this request,
 
 	int ciStatusCodeErrorBadRequest = 400;		//The server could not understand the request due to invalid syntax.
+	int ciStatusCodeNotFound = 404;				//The server can not find the requested resource. In the browser.
 
+	int ciStatusCodeInternalServerError = 500;	//The server has encountered a situation it doesn't know how to handle.
+	
 	//context parameters
 	String csClientname = "clientname";
 	
@@ -58,6 +61,7 @@ public interface Constants {
 	String csParamClientNickname = csClientTblNickname;
 	
 	String csParamAccounts = "accounts";	//request parameter used in conjunction with id to get all accounts
+	String csParamAccount = "account";	//request parameter used in conjunction with id to get a specific account
 	String csParamAccountNumber = csAccountTblAccountNumber;
 	String csParamAccountType = csAccountTblAccountType;
 	String csParamAccountBalance = csAccountTblAccountBalance;
@@ -65,6 +69,21 @@ public interface Constants {
 	String csParamAccountsGreaterThan = "acct_greater_than";
 
 
+	//Define program messages to use in the program and for testing
+	String csMsgDB_ErrorGettingAllClients = "Error with database getting all clients.";
+	String csMsgBadParamClientId = "Client Id must be a number.";
+	String csMsgClientNotFound = "Client was not found in the database.";
+	String csMsgDB_ErrorGettingByClientId = "Database error getting the client by id.";
+	String csMsgBadParamClientName = "Client first and last name must contain values.";
+	String csMsgDB_ErrorAddingClient = "Database error when adding a client.";
+	String csMsgDB_ErrorUpdatingClient = "Database error when updating client information.";
+	String csMsgDB_ErrorDeletingClient = "Database error when deleting client information.";
+	String csMsgBadParamNotInts = "One or more parameters are not numbers.";
+	String csMsgAccountsNotFound = "Accounts were not found in the database for the client.";
+	String csMsgBadParamAcctNumLen = "Account number length is invalid must be " + ciAccountTblAccountNumberLen + " in length.";
+	String csMsgBadParamAcctNumNotNumber = "Account number must be a number.";
+	String csMsgAcctDoesNotBelongToClient = "Account number not assigned to this client.";
+	
 }
 
 

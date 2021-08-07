@@ -86,6 +86,60 @@ public class AccountDAOImpl implements GenericDAO<Account>, Constants {
 		return lstAccount;
 	}
 
+	
+	//
+	// ###
+	public List<Account> getAccountsForClientInRange(int iClientId, int iUpperRange, int iLowerRange) throws SQLException {
+		String sMethod = "getAccountsForClientInRange(): ";
+		objLogger.trace(sMethod + "Entered");
+
+		List<Account> lstAccount = new ArrayList<>();
+
+		try (Connection conConnection = ConnectionUtility.getConnection()) {
+
+			
+			//SELECT * FROM project0.account WHERE client_id = 1 AND acct_balance >= 400.00 AND acct_balance <= 2000.00 ORDER BY acct_balance;
+			/*Both SQL statements work as long as setInt is not used for when using the first hardcoded statement
+			String sSQL = "SELECT * FROM " + csAccountTable + " WHERE " + csClientTblClientId + " = " + iClientId
+							+ " AND " + csAccountTblAccountBalance + " >= " + iLowerRange 
+							+ " AND " + csAccountTblAccountBalance + " <= " + iUpperRange 
+							+ " ORDER BY " + csAccountTblAccountBalance;		
+			*/
+
+			String sSQL2 = "SELECT * FROM " + csAccountTable + " WHERE " + csClientTblClientId + " = ? "
+					+ " AND " + csAccountTblAccountBalance + " >= ? " 
+					+ " AND " + csAccountTblAccountBalance + " <= ? "
+					+ " ORDER BY " + csAccountTblAccountBalance;		
+
+			
+			objLogger.debug(sMethod + "sSQL statement: [" + sSQL2 + "] using client id: [" + iClientId + "]");
+
+			PreparedStatement objPreparedStatmnt = conConnection.prepareStatement(sSQL2);
+			objPreparedStatmnt.setInt(1, iClientId); // set passed in client id in place of ?
+			objPreparedStatmnt.setInt(2, iLowerRange); // set passed in lower range in place of ?
+			objPreparedStatmnt.setInt(3, iUpperRange); // set passed in upper range in place of ?
+			
+			objLogger.debug(sMethod + "objPreparedStatmnt: [" + objPreparedStatmnt.toString() + "]");
+
+			ResultSet objResultSet = objPreparedStatmnt.executeQuery();
+			while (objResultSet.next()) {// data exists in the results set
+
+				String sAccountNumber = objResultSet.getString(csAccountTblAccountNumber);
+				String sAccountName = objResultSet.getString(csAccountTblAccountType);
+				double dAccountBalance = objResultSet.getDouble(csAccountTblAccountBalance);
+				// int iClientId = objResultSet.getInt(csClientTblClientId); Don't need used
+				// passed in value
+
+				Account objAccount = new Account(sAccountNumber, sAccountName, dAccountBalance, iClientId);
+				objLogger.debug(sMethod + "Add account to client's list: [" + objAccount.toString() + "]");
+				lstAccount.add(objAccount);
+			}
+		}
+		return lstAccount;
+	}
+
+	
+	
 	//
 	// ### Record Identifier is used as a string for account table
 	public Account getByRecordIdentifer(String sRecordIdentifier) throws SQLException {

@@ -8,19 +8,12 @@ import org.slf4j.LoggerFactory;
 
 import com.tlw8253.exception.DatabaseException;
 import com.tlw8253.exception.BadParameterException;
-import com.tlw8253.exception.ClientNotFoundException;
 import com.tlw8253.application.Constants;
 import com.tlw8253.dao.AccountDAOImpl;
-import com.tlw8253.dao.ClientDAO;
-import com.tlw8253.dao.GenericDAO;
 import com.tlw8253.dto.AccountAddDTO;
-import com.tlw8253.dto.AddDTO;
 import com.tlw8253.exception.AccountNotFoundException;
-//import com.tlw8253.dao.AccountDAO;
-//import com.tlw8253.dao.AccountDAOImpl;
-//import com.tlw8253.dto.AddOrEditAccountDTO;
 import com.tlw8253.model.Account;
-import com.tlw8253.model.Client;
+import com.tlw8253.util.Validate;
 
 
 /**
@@ -67,28 +60,60 @@ public class AccountService implements Constants {
 			throws DatabaseException, AccountNotFoundException, BadParameterException {
 		String sMethod = "getAccountByAccountNumber(): ";
 
-		Account objAccounts;
+		Account objAccount;
+		
+		//database does not store leading unless sent in as a string for the varchar
+		//changed the initial data load to insert as string keeping leading zeros
 		int iLen = sAccountNumber.length();
 
 		if (iLen != ciAccountTblAccountNumberLen) {
 			String sMsg = "Account Number has unexpected length of: [" + iLen + "].  Should have length of: ["
 					+ ciAccountTblAccountNumberLen + "].";
 			objLogger.debug(sMethod + sMsg);
-			throw new BadParameterException(sMsg);
+			throw new BadParameterException(csMsgBadParamAcctNumLen);
 		}
 
+		//account number should also be an int
+		if (!Validate.isInt(sAccountNumber)) {
+			String sMsg = "Account Number does not parse to int: [" + sAccountNumber + "].";
+			objLogger.debug(sMethod + sMsg);
+			throw new BadParameterException(csMsgBadParamAcctNumNotNumber);			
+		}
+
+		
 		try {
-			objAccounts = objAccountDAO.getByRecordIdentifer(sAccountNumber);
+			objAccount = objAccountDAO.getByRecordIdentifer(sAccountNumber);
 
 		} catch (SQLException objE) {
 			String sMsg = "Error with database getting account with identifier: [" + sAccountNumber + "]";
 			objLogger.error(sMethod + sMsg);
 			throw new DatabaseException(sMsg);
 		}
-		return (objAccounts);
-
+		return (objAccount);
 	}
 
+	//
+	// ###
+	public Account getAccountByAccountNumberForClientId(int iClientId, String sAccountNumber)
+			throws DatabaseException, AccountNotFoundException, BadParameterException {
+		String sMethod = "getAccountByAccountNumberForClientId(): ";
+
+		//just call getAccountByAccountNumber so it can do the account validation.
+		//then if record is found make sure it belongs to this client
+		
+		Account objAccount = getAccountByAccountNumber(sAccountNumber);
+		int iAcctClientId = objAccount.getClientId();
+		if (iAcctClientId != iClientId) {
+			String sMsg = "Account with number: [" + sAccountNumber + "] found but belongs to another client: [" 
+						+ iAcctClientId + "] not this client: [" + iClientId + "]";
+			objLogger.debug(sMethod + sMsg);
+			throw new AccountNotFoundException(csMsgAcctDoesNotBelongToClient);
+		}
+		return (objAccount);
+	}
+
+	
+	
 	//
 	// ### overload the getAccountsForClient() methods to use String or int input
 	// depending on the caller.
@@ -98,17 +123,18 @@ public class AccountService implements Constants {
 	public List<Account> getAccountsForClient(String sClientId)
 			throws DatabaseException, AccountNotFoundException, BadParameterException {
 		String sMethod = "getAccountsForClient(String): ";
+		
 		List<Account> lstAccounts;
-		try {
+		if(Validate.isInt(sClientId)) {			
 			objLogger.debug(sMethod + "parseInt client id input paramenter: [" + sClientId + "]");
 			int iClientId = Integer.parseInt(sClientId);
 			lstAccounts = getAccountsForClient(iClientId);
-
-		} catch (NumberFormatException objE) {
-			String sMsg = "Error converting client id to int: [" + sClientId + "].";
-			objLogger.error(sMethod + sMsg);
-			throw new BadParameterException(sMsg);
 		}
+		else {			
+			String sMsg = "Error converting client id to int: [" + sClientId + "].";
+			objLogger.debug(sMethod + sMsg);
+			throw new BadParameterException(csMsgBadParamClientId);
+		}		
 		return (lstAccounts);
 	}
 
@@ -132,11 +158,68 @@ public class AccountService implements Constants {
 		} catch (SQLException objE) {
 			String sMsg = "Error with database getting all accounts for client id: [" + iClientId + "].";
 			objLogger.error(sMethod + sMsg);
-			throw new DatabaseException(sMsg);
+			throw new DatabaseException(csMsgAccountsNotFound);
 		}
 		return (lstAccounts);
 
 	}
+
+	//
+	//###
+	public List<Account> getAccountsForClientInRange(String sClientId, String sUpperRange, String sLowerRange)
+			throws DatabaseException, AccountNotFoundException, BadParameterException {
+		String sMethod = "getAccountsForClientInRange(String): ";
+		
+		List<Account> lstAccounts;
+		if(Validate.isInt(sClientId) && Validate.isInt(sUpperRange) && Validate.isInt(sLowerRange)) {			
+			objLogger.debug(sMethod + "parseInt input paramenters: sClientId: [" + sClientId 
+					+ "] sUpperRange: [" + sUpperRange + "] sLowerRange: [" + sLowerRange + "]");			
+			
+			int iClientId = Integer.parseInt(sClientId);
+			int iUpperRange = Integer.parseInt(sUpperRange);
+			int iLowerRange = Integer.parseInt(sLowerRange);
+			
+			lstAccounts = getAccountsForClientInRange(iClientId, iUpperRange, iLowerRange);
+		}
+		else {			
+			String sMsg = "Error converting input to ints: sClientId: [" + sClientId 
+					+ "] sUpperRange: [" + sUpperRange +"] sLowerRange: [" + sLowerRange +"]";
+			objLogger.debug(sMethod + sMsg);
+			throw new BadParameterException(csMsgBadParamNotInts);
+		}		
+		return (lstAccounts);
+	}
+
+	//
+	// ###
+	public List<Account> getAccountsForClientInRange(int iClientId, int iUpperRange, int iLowerRange) 
+			throws DatabaseException, AccountNotFoundException {
+		String sMethod = "getAccountsForClientInRange(int): ";
+		List<Account> lstAccounts;
+		try {
+			objLogger.debug(sMethod + "Getting accounts in range for: iClientId: [" + iClientId 
+					+ "] iUpperRange: [" + iUpperRange + "] iLowerRange: [" + iLowerRange + "]");
+			
+			lstAccounts = objAccountDAO.getAccountsForClientInRange(iClientId, iUpperRange, iLowerRange);
+
+			if (lstAccounts.size() > 0) {
+				objLogger.debug(
+						sMethod + "Accounts for client id: [" + iClientId + "] [" + lstAccounts.toString() + "]");
+			} else {
+				String sMsg = "No accounts found for client id: [" + iClientId + "].";
+				objLogger.error(sMethod + sMsg);
+				throw new AccountNotFoundException(sMsg);
+			}
+		} catch (SQLException objE) {
+			String sMsg = "Error with database getting accounts in range for client id: [" + iClientId 
+					+ "] iUpperRange: [" + iUpperRange + "]  iLowerRange: [" + iLowerRange + "]";
+			objLogger.error(sMethod + sMsg);
+			throw new DatabaseException(csMsgAccountsNotFound);
+		}
+		return (lstAccounts);
+
+	}
+
 
 	//
 	// ### validate input parameters prior to sending to the DAO to add to the database. 

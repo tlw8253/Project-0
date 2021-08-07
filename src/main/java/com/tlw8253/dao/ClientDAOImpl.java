@@ -121,13 +121,14 @@ public class ClientDAOImpl implements Constants, ClientDAO {
 				objLogger.debug(sMethod + "Client without their account(s): [" + objClient.toString() + "].");
 				
 				//get the account(s) for this client
-				AccountDAOImpl objAccountDAOImpl = new AccountDAOImpl();
-				List<Account> lstAccounts = objAccountDAOImpl.getAccountsForClient(iClientId);
-				objLogger.debug(sMethod + "Account list for this client: [" + lstAccounts.toString() + "]");
-				objClient.setAccounts(lstAccounts);  //set all accounts for this client
+				//Can't do this here, if the request is one account, then this 
+				//should not be done.  Let the controller do this
+				//AccountDAOImpl objAccountDAOImpl = new AccountDAOImpl();
+				//List<Account> lstAccounts = objAccountDAOImpl.getAccountsForClient(iClientId);
+				//objLogger.debug(sMethod + "Account list for this client: [" + lstAccounts.toString() + "]");
+				//objClient.setAccounts(lstAccounts);  //set all accounts for this client				
+				//objLogger.debug(sMethod + "Return Client with account(s): [" + objClient.toString() + "].");
 				
-				
-				objLogger.debug(sMethod + "Return Client with account(s): [" + objClient.toString() + "].");
 				return (objClient);
 			} else {
 				objLogger.debug(sMethod + "Client with id: [" + iClientId + "] not found in database.");
@@ -232,9 +233,10 @@ public class ClientDAOImpl implements Constants, ClientDAO {
 	//
 	// ###
 	@Override
-	public void deleteClient(int iClientId) throws SQLException {
+	public boolean deleteClient(int iClientId) throws SQLException {
 		String sMethod = "deleteClient(): ";
 		objLogger.trace(sMethod + "Entered");
+		boolean bClientDeleted = false;
 
 		try (Connection conConnection = ConnectionUtility.getConnection()) {
 
@@ -255,8 +257,9 @@ public class ClientDAOImpl implements Constants, ClientDAO {
 				objLogger.warn(sMsg);
 				throw new SQLException(sMsg);
 			}
+			bClientDeleted=true;
 		}
-
+		return bClientDeleted;
 	}
 
 }

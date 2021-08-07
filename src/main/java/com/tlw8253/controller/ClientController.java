@@ -17,7 +17,7 @@ import io.javalin.Javalin;
 import io.javalin.http.Handler;
 
 /**
- * From Project-0 requirements these are the expected requests and responses:
+ * From Project-0 requirements these are the expected requests and responses (endpoints):
  * 
  * 	 * -(COMPLETED) `POST /clients`: Creates a new client 
 	 * - `POST /clients/{client_id}/accounts`: Create a new account for a client with id of X (if client exists)
@@ -32,14 +32,16 @@ import io.javalin.http.Handler;
 	 * 
 	 * -(COMPLETED) `GET /clients`: Gets all clients
 	 * -(COMPLETED) `GET /clients/{id}`: Get client with an id of X (if the client exists)	 * 
-	 * -(COMPLETED) `GET /clients/{client_id}/accounts`: Get all accounts for client with id of X (if client exists)
-	 * 
-	 * - `GET /clients/{client_id}/accounts?amountLessThan=2000&amountGreaterThan=400`: 
+	 * -(COMPLETED) `GET /clients/{client_id}/accounts`: Get all accounts for client with id of X (if client exists)	 * 
+	 * -(COMPLETED)  `GET /clients/{client_id}/accounts?amountLessThan=2000&amountGreaterThan=400`: 
 	 * 		Get all accounts for client id of X with balances between 400 and 2000 (if client exists)
+	 * 
+	 * This requirement is not real clear.  I believe they want to get a client's account by account number, if and
+	 * only if the account belongs to the client.
 	 * - `GET /clients/{client_id}/accounts/{account_id}`: Get account with id of Y belonging to client with id of 
 	 * 		X (if client and account exist AND if account belongs to client)
  * 
- * @author tlw87
+ * @author tlw8748253
  *
  */
 
@@ -101,7 +103,7 @@ public class ClientController implements Controller, Constants {
 		objLogger.debug(sMethod + "Context parameter client id: [" + sClientId + "]");
 		
 		String sAccounts = objCtx.pathParam(csParamAccounts);
-		objLogger.debug(sMethod + "Context parameter client id: [" + sAccounts + "]");		
+		objLogger.debug(sMethod + "Context parameter to get all accounts: [" + sAccounts + "]");		
 		
 		//first make sure this is an actual accounts request
 		if (sAccounts.equals(csParamAccounts)) {
@@ -212,7 +214,104 @@ public class ClientController implements Controller, Constants {
 	};
 
 	
+	//
+	//### - `GET /clients/{client_id}/accounts?amountLessThan=2000&amountGreaterThan=400`: 
+	// 		Get all accounts for client id of X with balances between 400 and 2000 (if client exists)
+	private Handler getClientAccountsInRange = (objCtx) -> {		
+		String sMethod = "getClientAccountsInRange(): ";
+		objLogger.trace(sMethod + "Entered");
+
+		Map<String,String> mPathParmaMap =  objCtx.pathParamMap();
+		objLogger.debug(sMethod + "Context parameter map: [" + mPathParmaMap + "]");
+
+		String sClientId = objCtx.pathParam(csParamClientId);
+		objLogger.debug(sMethod + "Context parameter client id: [" + sClientId + "]");
+		
+		String sAccounts = objCtx.pathParam(csParamAccounts);
+		objLogger.debug(sMethod + "Context parameter accounts: [" + sAccounts + "]");		
+		
+		//first make sure this is an actual accounts request
+		if (sAccounts.equals(csParamAccounts)) {
+			
+			//second get client from database / make sure they exists
+			Client objClient = objClientService.getClientById(sClientId);
+			objLogger.debug(sMethod + "Client object from database: [" + objClient.toString() + "]");
+			
+			//now get account range values
+			String sUpperRange = objCtx.pathParam(csParamAccountsLessThan);
+			objLogger.debug(sMethod + "Context parameter for upper range: [" + sUpperRange + "]");	
+
+			String sLowerRange = objCtx.pathParam(csParamAccountsGreaterThan);
+			objLogger.debug(sMethod + "Context parameter for upper range: [" + sLowerRange + "]");	
+			
+			//third get the accounts for this client
+			AccountService objAccountService = new AccountService();
+
+			//ranges have not been validated so use string method
+			List<Account> lstAccounts = objAccountService.getAccountsForClientInRange(sClientId, sUpperRange, sLowerRange); 
+			objLogger.debug(sMethod + "Client accounts from AccountSerice within range: [" + lstAccounts.toString() + "]");
+			
+			objClient.setAccounts(lstAccounts); // add accounts in client for the json response
+			
+			objCtx.status(ciStatusCodeSuccess);
+			objCtx.json(objClient);	//send client object with accounts
+			//objCtx.json(lstAccounts);
+		}
+		else {
+			objCtx.status(ciStatusCodeErrorBadRequest);			
+		}		
+/*	*/
 	
+	};
+	
+	 //* This requirement is not real clear.  I believe they want to get a client's account by account number, if and
+	 //* only if the account belongs to the client.
+	 //*### - `GET /clients/{client_id}/accounts/{account_id}`: Get account with id of Y belonging to client with id of 
+	 //* 		X (if client and account exist AND if account belongs to client)
+	private Handler getClientAccountByAccountNumber = (objCtx) -> {		
+		String sMethod = "getClientAccountByAccountNumber(): ";
+		objLogger.trace(sMethod + "Entered");
+
+		Map<String,String> mPathParmaMap =  objCtx.pathParamMap();
+		objLogger.debug(sMethod + "Context parameter map: [" + mPathParmaMap + "]");
+
+		String sClientId = objCtx.pathParam(csParamClientId);
+		objLogger.debug(sMethod + "Context parameter client id: [" + sClientId + "]");
+		
+		String sAccount = objCtx.pathParam(csParamAccount);
+		objLogger.debug(sMethod + "Context parameter get account identifier: [" + sAccount + "]");
+		
+		String sAccountNumber = objCtx.pathParam(csParamAccountNumber);
+		objLogger.debug(sMethod + "Context parameter account number: [" + sAccountNumber + "]");		
+
+		//first make sure this is an actual account request
+		if (sAccount.equals(csParamAccount)) {
+			
+			//second get client from database / make sure they exist
+			Client objClient = objClientService.getClientById(sClientId);
+			objLogger.debug(sMethod + "Client object from database: [" + objClient.toString() + "]");
+			
+			//third get the specific account by number that belongs to this client
+			AccountService objAccountService = new AccountService();
+
+			//
+			List<Account> lstAccounts = objAccountService.getAccountsForClient(objClient.getRecordId()); 
+			objLogger.debug(sMethod + "Client accounts from AccountSerice: [" + lstAccounts.toString() + "]");
+			
+			objClient.setAccounts(lstAccounts); // add accounts in client for the json response
+			
+			objCtx.status(ciStatusCodeSuccess);
+			objCtx.json(objClient);	//send client object with accounts
+			//objCtx.json(lstAccounts);
+		}
+		else {
+			objCtx.status(ciStatusCodeErrorBadRequest);			
+		}		
+	
+	};
+	
+
+
 	
 	@Override
 	public void mapEndpoints(Javalin app) {
@@ -222,18 +321,36 @@ public class ClientController implements Controller, Constants {
 		//- `GET /clients/{client_id}/accounts`: Get all accounts for client with id of X (if client exists)
 		app.get("/client/:" + csParamClientId + "/:" + csParamAccounts, getClientAccounts);
 		
+		// - `GET /clients/{client_id}/accounts?amountLessThan=2000&amountGreaterThan=400`: 
+		// 		Get all accounts for client id of X with balances between 400 and 2000 (if client exists)
+		app.get("/client/:" + csParamClientId 
+				+ "/:" + csParamAccounts
+				+ "/:" + csParamAccountsLessThan
+				+ "/:" + csParamAccountsGreaterThan, 
+				getClientAccountsInRange);
+
+		 //* This requirement is not real clear.  I believe they want to get a client's account by account number, if and
+		 //* only if the account belongs to the client.
+		 //* - `GET /clients/{client_id}/accounts/{account_id}`: Get account with id of Y belonging to client with id of 
+		 //* 		X (if client and account exist AND if account belongs to client)
+		app.get("/client/:" + csParamClientId 
+				+ "/:" + csParamAccount
+				+ "/:" + csParamAccountNumber, 
+				getClientAccountByAccountNumber);
+
+		
 		//- `POST /clients`: Creates a new client
 		app.post("/client/:"  + csClientTblFirstName 
 				+ "/:" + csClientTblLastName 
-				+ "/:" + csClientTblNickname
-		, postAddClient);
+				+ "/:" + csClientTblNickname,
+				postAddClient);
 		
 		//- `PUT /clients/{id}`: Update client with an id of X (if the client exists)
 		app.put("/client/:"  + csParamClientId
 				+ "/:" + csClientTblFirstName 
 				+ "/:" + csClientTblLastName 
-				+ "/:" + csClientTblNickname
-		, postUpdateClient);
+				+ "/:" + csClientTblNickname,
+				postUpdateClient);
 		
 		//- `DELETE /clients/{id}`: Delete client with an id of X (if the client exists)
 		app.delete("/client/:" + csParamClientId, deleteClientById);	

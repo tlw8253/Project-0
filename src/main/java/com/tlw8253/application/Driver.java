@@ -9,10 +9,12 @@ import com.tlw8253.dao.AccountDAOImpl;
 import com.tlw8253.dto.AccountAddDTO;
 import com.tlw8253.dto.AddOrEditClientDTO;
 import com.tlw8253.dto.AddDTO;
+import com.tlw8253.exception.*;
 import com.tlw8253.exception.DatabaseException;
 import com.tlw8253.javalin.JavalinHelper;
 import com.tlw8253.model.Account;
 import com.tlw8253.model.Client;
+import com.tlw8253.service.AccountService;
 import com.tlw8253.service.ClientService;
 
 /**
@@ -53,7 +55,7 @@ public class Driver implements Constants {
 		// Test database access for Client
 		// getAllCients();
 		// getCientById("1");
-		 addClient();
+		 //addClient();
 		// editClient();
 		// deleteClient();
 		// getAllCients();
@@ -62,9 +64,26 @@ public class Driver implements Constants {
 		//testAccountAddDTO();
 		//testAccountDAOImplGetAllRecords();
 		//testAccountDAOImplAddRecord();
+		
+		testGetAccountsForClientInRange();
 
 	}
 
+	//
+	//###
+	public static void testGetAccountsForClientInRange() {
+		String sMethod = "testGetAccountsForClientInRange(): ";
+		AccountService objAccountService = new AccountService();
+		
+		try {
+			List<Account> lstAccounts = objAccountService.getAccountsForClientInRange("1", "2000", "400");
+			objLogger.debug(sMethod + "lstAccounts: [" + lstAccounts.toString() + "]");
+		}catch(Exception objE) {
+			objLogger.debug(sMethod + "caught Exception: [" + objE.toString() + "]");			
+		}
+		
+	}
+	
 	//
 	// ###
 	public static void testAccountDAOImplAddRecord() {

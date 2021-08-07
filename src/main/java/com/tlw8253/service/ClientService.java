@@ -9,12 +9,13 @@ import org.slf4j.LoggerFactory;
 import com.tlw8253.exception.DatabaseException;
 import com.tlw8253.exception.BadParameterException;
 import com.tlw8253.exception.ClientNotFoundException;
+import com.tlw8253.application.Constants;
 import com.tlw8253.dao.ClientDAO;
 import com.tlw8253.dao.ClientDAOImpl;
 import com.tlw8253.dto.AddOrEditClientDTO;
 import com.tlw8253.model.Client;
 
-public class ClientService {
+public class ClientService implements Constants{
 	private Logger objLogger = LoggerFactory.getLogger(ClientService.class);
 
 	private ClientDAO objClientDAO;
@@ -36,7 +37,7 @@ public class ClientService {
 			lstClients = objClientDAO.getAllClients();
 
 		} catch (SQLException objE) {
-			String sMsg = "Error with database getting all clients.";
+			String sMsg = csMsgDB_ErrorGettingAllClients;
 			objLogger.error(sMethod + sMsg);
 			throw new DatabaseException(sMsg); //easier to have static message for JUnit testing
 		}
@@ -55,19 +56,18 @@ public class ClientService {
 			if (objClient == null) {
 				String sMsg = "Client with id: [" + iClientId + "] not found in the database.";
 				objLogger.debug( sMethod + sMsg);
-				throw new ClientNotFoundException("Client was not found in the database."); //easier to have static message for JUnit testing
+				throw new ClientNotFoundException(csMsgClientNotFound); //easier to have static message for JUnit testing
 			}
 			return (objClient);
 		} catch (SQLException objE) {
-			String sMsg = "Database error getting the client by id.";
-			objLogger.error(sMethod + sMsg + "[" + objE.getMessage() + "]");
-			throw new DatabaseException(sMsg);
+			objLogger.error(sMethod + csMsgDB_ErrorGettingByClientId + "[" + objE.getMessage() + "]");
+			throw new DatabaseException(csMsgDB_ErrorGettingByClientId);
 			
 		} catch (NumberFormatException objE) {
 
 			String sMsg = "Client Id: [" + sClientId + "] is not an integer.";
 			objLogger.debug(sMethod + sMsg + "[" + objE.getMessage() + "]");
-			throw new BadParameterException("Client Id is not an integer."); //easier to have static message for JUnit testing
+			throw new BadParameterException(csMsgBadParamClientId); //easier to have static message for JUnit testing
 		}
 
 	}
@@ -84,7 +84,7 @@ public class ClientService {
 					+ "]" + " last name [" + objAddClientDTO.getLastName() + "]";
 			objLogger.debug(sMethod + sMsg);
 
-			throw new BadParameterException("Client first and last name must contain values.");//easier to have static message for JUnit testing
+			throw new BadParameterException(csMsgBadParamClientName);//easier to have static message for JUnit testing
 		}
 
 		try {
@@ -95,9 +95,8 @@ public class ClientService {
 			String sMsg = "Database error adding client: first name: [" + objAddClientDTO.getFirstName() + "]"
 					+ " last name [" + objAddClientDTO.getLastName() + "]";
 			objLogger.error(sMethod + sMsg + "[" + objE.getMessage() + "]");
-			throw new DatabaseException("Database error when adding a client."); //easier to have static message for JUnit testing
+			throw new DatabaseException(csMsgDB_ErrorAddingClient); //easier to have static message for JUnit testing
 		}
-
 	}
 
 	//
@@ -114,7 +113,7 @@ public class ClientService {
 			if (objClientDAO.getClientById(iClientId) == null) {
 				sMsg = "Client with id: [" + iClientId + "] was not found, unable to update.";
 				objLogger.debug(sMethod + sMsg);
-				throw new ClientNotFoundException("Client was not found in the database.");
+				throw new ClientNotFoundException(csMsgClientNotFound);
 			}
 
 			// record found, update the Client
@@ -125,22 +124,23 @@ public class ClientService {
 			sMsg = "Database error updating client: first name: [" + objEditClientDTO.getFirstName() + "]"
 					+ " last name [" + objEditClientDTO.getLastName() + "]";
 			objLogger.error(sMethod + sMsg + "[" + objE.getMessage() + "]");
-			throw new DatabaseException("Database error updating a client."); //easier to have static message for JUnit testing
+			throw new DatabaseException(csMsgDB_ErrorUpdatingClient); //easier to have static message for JUnit testing
 			
 		} catch (NumberFormatException objE) {
 			sMsg = "Client Id is not an integer: [" + sClientId + "]";
 			objLogger.error(sMethod + sMsg + "[" + objE.getMessage() + "]");
-			throw new BadParameterException("Client Id is not an integer."); //easier to have static message for JUnit testing
+			throw new BadParameterException(csMsgBadParamClientId); //easier to have static message for JUnit testing
 		}
 
 	}
 
 	//
 	//###
-	public void deleteClient(String sClientId)
+	public boolean deleteClient(String sClientId)
 			throws BadParameterException, DatabaseException, ClientNotFoundException {
 		String sMethod = "deleteClient(): ";
 		String sMsg = "";
+		boolean bClientDelete = false;
 
 		try {
 			int iClientId = Integer.parseInt(sClientId);
@@ -149,22 +149,25 @@ public class ClientService {
 			if (objClientDAO.getClientById(iClientId) == null) {
 				sMsg = "Client with id: [" + iClientId + "] was not found, unable to delete.";
 				objLogger.debug(sMethod + sMsg);
-				throw new ClientNotFoundException("Client was not found in the database."); //easier to have static message for JUnit testing
+				throw new ClientNotFoundException(csMsgClientNotFound); //easier to have static message for JUnit testing
 			}
 
 			// record found, delete the Client
 			objClientDAO.deleteClient(iClientId);
+			bClientDelete=true;
+			
 		} catch (SQLException objE) {
 			sMsg = "Database error deleting client with id: [" + sClientId + "]";
 			objLogger.error(sMethod + sMsg + "[" + objE.getMessage() + "]");
-			throw new DatabaseException("Database error deleting a client."); //easier to have static message for JUnit testing
+			throw new DatabaseException(csMsgDB_ErrorDeletingClient); //easier to have static message for JUnit testing
 			
 		} catch (NumberFormatException objE) {
 			sMsg = sMethod + "Client Id is not an integer: [" + sClientId + "]";
 			objLogger.error(sMethod + sMsg + "[" + objE.getMessage() + "]");
-			throw new BadParameterException("Client Id is not an integer."); //easier to have static message for JUnit testing
+			throw new BadParameterException(csMsgBadParamClientId); //easier to have static message for JUnit testing
 		}
 
+		return(bClientDelete);
 	}
 
 }
