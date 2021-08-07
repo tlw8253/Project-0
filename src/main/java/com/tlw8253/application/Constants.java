@@ -53,6 +53,8 @@ public interface Constants {
 	String csAccountTblAccountBalance = "acct_balance";
 	String csAccountTypeValueChecking = "CHECKING";
 	String csAccountTypeValueSavings = "SAVINGS";
+	int ciAccountNumMinVal = 1;
+	int ciAccountNumMaxVal = 99999;
 	
 	//HTTP request parameter constants
 	String csParamClientId = csClientTblClientId; 
@@ -83,7 +85,8 @@ public interface Constants {
 	String csMsgBadParamAcctNumLen = "Account number length is invalid must be " + ciAccountTblAccountNumberLen + " in length.";
 	String csMsgBadParamAcctNumNotNumber = "Account number must be a number.";
 	String csMsgAcctDoesNotBelongToClient = "Account number not assigned to this client.";
-	
+	String csMsgBadParamAccountTypes = "Valid account types are: " + csAccountTypeValueChecking + " or " + csAccountTypeValueSavings;
+	String csMsgBadParmAccountBalance = "Account balance did not tranlate to numeric value.";
 }
 
 

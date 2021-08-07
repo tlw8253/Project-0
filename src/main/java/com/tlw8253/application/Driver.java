@@ -17,6 +17,8 @@ import com.tlw8253.model.Client;
 import com.tlw8253.service.AccountService;
 import com.tlw8253.service.ClientService;
 
+import com.tlw8253.util.*;
+
 /**
  * This is a driver used during development to test functionality as it is
  * built. The Application class will be the main entry point for the program
@@ -55,35 +57,84 @@ public class Driver implements Constants {
 		// Test database access for Client
 		// getAllCients();
 		// getCientById("1");
-		 //addClient();
+		// addClient();
 		// editClient();
 		// deleteClient();
 		// getAllCients();
 
 		// testGenericAddDTO();
-		//testAccountAddDTO();
-		//testAccountDAOImplGetAllRecords();
-		//testAccountDAOImplAddRecord();
-		
-		testGetAccountsForClientInRange();
+		// testAccountAddDTO();
+		// testAccountDAOImplGetAllRecords();
+		// testAccountDAOImplAddRecord();
+
+		// testGetAccountsForClientInRange();
+		// testGetRandomIntBetween();
+		// testPaddIntegerLeadingZero();
+
+		testCreateNewAccountForClient();
 
 	}
 
 	//
-	//###
+	// ###
+	public static void testCreateNewAccountForClient() {
+		String sMethod = "testCreateNewAccountForClient(): ";
+		AccountService objAccountService = new AccountService();
+
+		try {
+			Account objNewAccount = objAccountService.createNewAccountForClient(4, csAccountTypeValueSavings, "5231.10");
+			objLogger.debug(sMethod + "objNewAccount: [" + objNewAccount.toString() + "]");
+			
+		} catch (Exception objE) {
+			objLogger.debug(sMethod + "Exception: [" + objE.getMessage() + "]");
+		}
+	}
+
+	//
+	// ###
+	public static void testPaddIntegerLeadingZero() {
+		String sMethod = "testPaddIntegerLeadingZero(): ";
+
+		String sPadValue = Utility.padIntLeadingZero(5, 5);
+		objLogger.debug(sMethod + "String: [" + sPadValue + "]");
+
+		sPadValue = Utility.padIntLeadingZero(555, 5);
+		objLogger.debug(sMethod + "String: [" + sPadValue + "]");
+
+		sPadValue = Utility.padIntLeadingZero(5555, 5);
+		objLogger.debug(sMethod + "String: [" + sPadValue + "]");
+
+		sPadValue = Utility.padIntLeadingZero(55555, 5);
+		objLogger.debug(sMethod + "String: [" + sPadValue + "]");
+
+		sPadValue = Utility.padIntLeadingZero(555555, 5);
+		objLogger.debug(sMethod + "String: [" + sPadValue + "]");
+
+	}
+
+	//
+	// ###
+	public static void testGetRandomIntBetween() {
+		String sMethod = "testGetRandomIntBetween(): ";
+		int iValue = Utility.getRandomIntBetween(1, 99999);
+		objLogger.debug(sMethod + "iValue: [" + iValue + "]");
+	}
+
+	//
+	// ###
 	public static void testGetAccountsForClientInRange() {
 		String sMethod = "testGetAccountsForClientInRange(): ";
 		AccountService objAccountService = new AccountService();
-		
+
 		try {
 			List<Account> lstAccounts = objAccountService.getAccountsForClientInRange("1", "2000", "400");
 			objLogger.debug(sMethod + "lstAccounts: [" + lstAccounts.toString() + "]");
-		}catch(Exception objE) {
-			objLogger.debug(sMethod + "caught Exception: [" + objE.toString() + "]");			
+		} catch (Exception objE) {
+			objLogger.debug(sMethod + "caught Exception: [" + objE.toString() + "]");
 		}
-		
+
 	}
-	
+
 	//
 	// ###
 	public static void testAccountDAOImplAddRecord() {
@@ -96,14 +147,14 @@ public class Driver implements Constants {
 		try {
 			Account objAccounts = objAccountDAOImpl.addRecord(objAccountAddDTO);
 
-				objLogger.debug(sMethod + "Account returned by objAccountDAOImpl.addRecord():[" + objAccounts.toString() + "]");
+			objLogger.debug(
+					sMethod + "Account returned by objAccountDAOImpl.addRecord():[" + objAccounts.toString() + "]");
 
 		} catch (Exception objE) {
 			objLogger.error(sMethod + "Exception: [" + objE.getMessage() + "]");
 		}
 	}
 
-	
 	//
 	// ###
 	public static void testAccountDAOImplGetAllRecords() {

@@ -30,6 +30,7 @@ import io.javalin.http.Handler;
 	 * - `DELETE /clients/{client_id}/accounts/{account_id}`: Delete account with id of Y belonging to 
 	 * 		client with id of X (if client and account exist AND if account belongs to client)
 	 * 
+	 * 20210806 - all GETs initially implemented
 	 * -(COMPLETED) `GET /clients`: Gets all clients
 	 * -(COMPLETED) `GET /clients/{id}`: Get client with an id of X (if the client exists)	 * 
 	 * -(COMPLETED) `GET /clients/{client_id}/accounts`: Get all accounts for client with id of X (if client exists)	 * 
@@ -38,7 +39,7 @@ import io.javalin.http.Handler;
 	 * 
 	 * This requirement is not real clear.  I believe they want to get a client's account by account number, if and
 	 * only if the account belongs to the client.
-	 * - `GET /clients/{client_id}/accounts/{account_id}`: Get account with id of Y belonging to client with id of 
+	 * - (COMPLETED) `GET /clients/{client_id}/accounts/{account_id}`: Get account with id of Y belonging to client with id of 
 	 * 		X (if client and account exist AND if account belongs to client)
  * 
  * @author tlw8748253
@@ -49,12 +50,12 @@ import io.javalin.http.Handler;
 public class ClientController implements Controller, Constants {
 	private Logger objLogger = LoggerFactory.getLogger(ClientController.class);
 	private ClientService objClientService;
+	AccountService objAccountService;
 	
 	public ClientController() {
 		this.objClientService = new ClientService();
+		objAccountService = new AccountService();
 	}
-	
-
 	
 	
 	//
@@ -63,7 +64,14 @@ public class ClientController implements Controller, Constants {
 		String sMethod = "getAllClients(): ";
 		objLogger.trace(sMethod + "Entered");
 
+		//list of all clients in the database
 		List<Client> lstClients = objClientService.getAllClients();
+		
+		//get the accounts for each client
+		for (int iCtr=0; iCtr < lstClients.size(); iCtr++) {
+			List<Account> lstAccounts = objAccountService.getAccountsForClient(lstClients.get(iCtr).getClientId());
+			lstClients.get(iCtr).setAccounts(lstAccounts);
+		}
 		
 		objLogger.debug(sMethod + "lstClients: [" + lstClients.toString() + "]");
 		
@@ -85,6 +93,10 @@ public class ClientController implements Controller, Constants {
 		
 		Client objClient = objClientService.getClientById(sClientId);
 		objLogger.debug(sMethod + "Client object from database: [" + objClient.toString() + "]");
+		
+		//get the accounts for this client
+		List<Account> lstAccounts = objAccountService.getAccountsForClient(sClientId);
+		objClient.setAccounts(lstAccounts);
 		
 		objCtx.status(ciStatusCodeSuccess);
 		objCtx.json(objClient);
@@ -113,9 +125,9 @@ public class ClientController implements Controller, Constants {
 			objLogger.debug(sMethod + "Client object from database: [" + objClient.toString() + "]");
 			
 			//third get the accounts for this client
-			AccountService objAccountService = new AccountService();
+			
 			//use int method since we know client exists
-			List<Account> lstAccounts = objAccountService.getAccountsForClient(objClient.getRecordId()); 
+			List<Account> lstAccounts = objAccountService.getAccountsForClient(objClient.getClientId()); 
 			objLogger.debug(sMethod + "Client accounts from AccountSerice: [" + lstAccounts.toString() + "]");
 			
 			objClient.setAccounts(lstAccounts); // add accounts in client for the json response
@@ -293,13 +305,10 @@ public class ClientController implements Controller, Constants {
 			
 			//third get the specific account by number that belongs to this client
 			AccountService objAccountService = new AccountService();
+			
+			Account objAccount = objAccountService.getAccountByAccountNumberForClientId(objClient.getClientId(), sAccountNumber);
+			objClient.setAccount(objAccount); //set the account for this client
 
-			//
-			List<Account> lstAccounts = objAccountService.getAccountsForClient(objClient.getRecordId()); 
-			objLogger.debug(sMethod + "Client accounts from AccountSerice: [" + lstAccounts.toString() + "]");
-			
-			objClient.setAccounts(lstAccounts); // add accounts in client for the json response
-			
 			objCtx.status(ciStatusCodeSuccess);
 			objCtx.json(objClient);	//send client object with accounts
 			//objCtx.json(lstAccounts);
@@ -311,6 +320,34 @@ public class ClientController implements Controller, Constants {
 	};
 	
 
+	//
+	//### - `POST /clients/{client_id}/accounts`: Create a new account for a client with id of X (if client exists)
+	// generate a random number for account number
+	private Handler postAddClientAccount = (objCtx) -> {
+		String sMethod = "postAddClient(): ";
+		objLogger.trace(sMethod + "Entered");
+		
+		Map<String,String> mPathParmaMap =  objCtx.pathParamMap();
+		objLogger.debug(sMethod + "Context parameter map: [" + mPathParmaMap + "]");
+		
+		String sFirstName = objCtx.pathParam(csParamClientFirstName);
+		objLogger.debug(sMethod + "Context parameter " + csParamClientFirstName + ": [" + sFirstName + "]");
+		
+		String sLastName = objCtx.pathParam(csParamClientLastName);
+		objLogger.debug(sMethod + "Context parameter " + csParamClientLastName + ": [" + sLastName + "]");
+		
+		String sNickname = objCtx.pathParam(csParamClientNickname);
+		objLogger.debug(sMethod + "Context parameter " + csParamClientNickname + ": [" + sNickname + "]");
+		
+		AddOrEditClientDTO objClientToAdd = new AddOrEditClientDTO(sFirstName, sLastName, sNickname);
+		objLogger.debug(sMethod + "objClientToAdd: [" + objClientToAdd.toString() + "]");
+		
+		Client objAddedClient = objClientService.addClient(objClientToAdd);
+		objLogger.debug(sMethod + "objAddedClient: [" + objAddedClient.toString() + "]");
+		objCtx.json(objAddedClient);
+		
+		
+	};
 
 	
 	@Override
@@ -345,6 +382,14 @@ public class ClientController implements Controller, Constants {
 				+ "/:" + csClientTblNickname,
 				postAddClient);
 		
+		//- `POST /clients/{client_id}/accounts`: Create a new account for a client with id of X (if client exists)
+		// generate a random number for account number
+		app.post("/client/:"  + csParamClientId 
+				+ "/:" + csParamAccountType 
+				+ "/:" + csParamAccountBalance,
+				postAddClientAccount);
+
+		
 		//- `PUT /clients/{id}`: Update client with an id of X (if the client exists)
 		app.put("/client/:"  + csParamClientId
 				+ "/:" + csClientTblFirstName 
@@ -355,15 +400,6 @@ public class ClientController implements Controller, Constants {
 		//- `DELETE /clients/{id}`: Delete client with an id of X (if the client exists)
 		app.delete("/client/:" + csParamClientId, deleteClientById);	
 		
-		
-		
-		/*
-		app.get("/ship", getAllShips);
-		app.get("/ship/:shipid", getShipById);
-		app.post("/ship", addShip);
-		app.put("/ship/:shipid", editShip);
-		app.delete("/ship/:shipid", deleteShip);
-		*/
 	}
 
 }

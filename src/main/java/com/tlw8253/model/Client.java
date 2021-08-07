@@ -1,5 +1,6 @@
 package com.tlw8253.model;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -15,8 +16,7 @@ public class Client {
 	private String sLastName = "";
 	private String sNickname = "";
 
-//	private List<Phone> listPhones;		TBD
-	private List<Account> lstAccounts;
+	private List<Account> lstAccounts = new ArrayList<>();
 	
 	
 	public Client() {
@@ -40,11 +40,11 @@ public class Client {
 
 	//
 	//### getters & setters
-	public int getRecordId() {
+	public int getClientId() {
 		return iClientId;
 	}
 
-	public void setRecordId(int iRecordId) {
+	public void setClientId(int iRecordId) {
 		this.iClientId = iRecordId;
 	}
 
@@ -77,6 +77,9 @@ public class Client {
 	}
 	public void setAccounts(List<Account> lstAccounts) {
 		this.lstAccounts =lstAccounts;
+	}
+	public void setAccount(Account objAccount) {
+		lstAccounts.add(objAccount);
 	}
 	
 		

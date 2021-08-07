@@ -241,4 +241,37 @@ public class AccountDAOImpl implements GenericDAO<Account>, Constants {
 		return null;
 	}
 
+	//
+	//###
+	public boolean doesAccountExist(String sAccountNumber) throws Exception {
+		String sMethod = "doesAccountExist(): ";
+		boolean bAccountExists = false;
+		
+		try (Connection conConnection = ConnectionUtility.getConnection()) {
+			String sSQL = "SELECT * FROM " + csAccountTable + " WHERE " + csAccountTblAccountNumber + " = ?";
+			objLogger.debug(
+					sMethod + "sSQL statement: [" + sSQL + "] using sRecordIdentifier: [" + sAccountNumber + "]");
+
+			PreparedStatement objPreparedStatmnt = conConnection.prepareStatement(sSQL);
+			objPreparedStatmnt.setString(1, sAccountNumber); // set passed in record id in place of ?
+			objLogger.debug(sMethod + "objPreparedStatmnt: [" + objPreparedStatmnt.toString() + "]");
+
+			ResultSet objResultSet = objPreparedStatmnt.executeQuery();
+
+			if (objResultSet.next()) {// data exists in the results set
+				objLogger.debug(sMethod + "account record with identifer: [" + sAccountNumber + "] exists in database.");
+				bAccountExists = true;
+			} 
+			else
+				objLogger.debug(sMethod + "account record with identifer: [" + sAccountNumber + "] does NOT exists in database.");
+			
+		}catch(Exception objE) {
+			objLogger.debug(sMethod + "objE: [" + objE.getMessage() + "]");
+			//any kind of exception here is a problem, throw it to caller.
+			String sMsg = "Exception occurred while accessing the database.";
+			throw new Exception(sMsg);			
+		}
+		return bAccountExists;
+	}
+	
 }

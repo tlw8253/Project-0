@@ -13,7 +13,6 @@ import org.slf4j.LoggerFactory;
 
 import com.tlw8253.application.Constants;
 import com.tlw8253.dto.AddOrEditClientDTO;
-import com.tlw8253.model.Account;
 import com.tlw8253.model.Client;
 import com.tlw8253.util.ConnectionUtility;
 
@@ -60,12 +59,12 @@ public class ClientDAOImpl implements Constants, ClientDAO {
 			//String sSQL  = "SELECT * FROM project0.client";
 			String sSQL = "SELECT * FROM " + csClientTable;
 			objLogger.debug(sMethod + "sSQL statement: [" + sSQL + "]");
+			objLogger.debug(sMethod + "objStatement: [" + objStatement.toString() + "]");			
 			
 			ResultSet objResultSet = objStatement.executeQuery(sSQL);
 
 			// 4. Process the results
-			while (objResultSet.next()) {// data exists in the results set
-				
+			while (objResultSet.next()) {// data exists in the results set				
 
 				int iClientId = objResultSet.getInt(csClientTblClientId);
 				String sFirstName = objResultSet.getString(csClientTblFirstName);
@@ -76,13 +75,10 @@ public class ClientDAOImpl implements Constants, ClientDAO {
 				objLogger.debug(sMethod + "Client object without accounts: [" + objClient.toString() + "]");
 				
 				//5. now get all accounts for this client
-				AccountDAOImpl objAccountDAOImpl = new AccountDAOImpl();
-				List<Account> lstAccounts = objAccountDAOImpl.getAccountsForClient(iClientId);
-				objLogger.debug(sMethod + "Account list for this client: [" + lstAccounts.toString() + "]");
-				objClient.setAccounts(lstAccounts);  //set all accounts for this client
+				//Need to let the control handle this there for consistency
 				
-				objLogger.debug(sMethod + "Adding Client object with accounts to list of clients: [" + objClient.toString() + "]");
 				lstClients.add(objClient);
+				
 			}
 		}
 		objLogger.debug(sMethod + "lstClients: [" + lstClients.toString() + "]");
@@ -123,12 +119,7 @@ public class ClientDAOImpl implements Constants, ClientDAO {
 				//get the account(s) for this client
 				//Can't do this here, if the request is one account, then this 
 				//should not be done.  Let the controller do this
-				//AccountDAOImpl objAccountDAOImpl = new AccountDAOImpl();
-				//List<Account> lstAccounts = objAccountDAOImpl.getAccountsForClient(iClientId);
-				//objLogger.debug(sMethod + "Account list for this client: [" + lstAccounts.toString() + "]");
-				//objClient.setAccounts(lstAccounts);  //set all accounts for this client				
-				//objLogger.debug(sMethod + "Return Client with account(s): [" + objClient.toString() + "].");
-				
+			
 				return (objClient);
 			} else {
 				objLogger.debug(sMethod + "Client with id: [" + iClientId + "] not found in database.");

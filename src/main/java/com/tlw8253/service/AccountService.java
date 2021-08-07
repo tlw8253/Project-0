@@ -13,11 +13,12 @@ import com.tlw8253.dao.AccountDAOImpl;
 import com.tlw8253.dto.AccountAddDTO;
 import com.tlw8253.exception.AccountNotFoundException;
 import com.tlw8253.model.Account;
+import com.tlw8253.util.Utility;
 import com.tlw8253.util.Validate;
 
-
 /**
- * AccountService is used for data validation prior to adding or updating elements in the database.
+ * AccountService is used for data validation prior to adding or updating
+ * elements in the database.
  * 
  * @author tlw8748253
  *
@@ -61,9 +62,9 @@ public class AccountService implements Constants {
 		String sMethod = "getAccountByAccountNumber(): ";
 
 		Account objAccount;
-		
-		//database does not store leading unless sent in as a string for the varchar
-		//changed the initial data load to insert as string keeping leading zeros
+
+		// database does not store leading unless sent in as a string for the varchar
+		// changed the initial data load to insert as string keeping leading zeros
 		int iLen = sAccountNumber.length();
 
 		if (iLen != ciAccountTblAccountNumberLen) {
@@ -73,14 +74,13 @@ public class AccountService implements Constants {
 			throw new BadParameterException(csMsgBadParamAcctNumLen);
 		}
 
-		//account number should also be an int
+		// account number should also be an int
 		if (!Validate.isInt(sAccountNumber)) {
 			String sMsg = "Account Number does not parse to int: [" + sAccountNumber + "].";
 			objLogger.debug(sMethod + sMsg);
-			throw new BadParameterException(csMsgBadParamAcctNumNotNumber);			
+			throw new BadParameterException(csMsgBadParamAcctNumNotNumber);
 		}
 
-		
 		try {
 			objAccount = objAccountDAO.getByRecordIdentifer(sAccountNumber);
 
@@ -98,22 +98,20 @@ public class AccountService implements Constants {
 			throws DatabaseException, AccountNotFoundException, BadParameterException {
 		String sMethod = "getAccountByAccountNumberForClientId(): ";
 
-		//just call getAccountByAccountNumber so it can do the account validation.
-		//then if record is found make sure it belongs to this client
-		
+		// just call getAccountByAccountNumber so it can do the account validation.
+		// then if record is found make sure it belongs to this client
+
 		Account objAccount = getAccountByAccountNumber(sAccountNumber);
 		int iAcctClientId = objAccount.getClientId();
 		if (iAcctClientId != iClientId) {
-			String sMsg = "Account with number: [" + sAccountNumber + "] found but belongs to another client: [" 
-						+ iAcctClientId + "] not this client: [" + iClientId + "]";
+			String sMsg = "Account with number: [" + sAccountNumber + "] found but belongs to another client: ["
+					+ iAcctClientId + "] not this client: [" + iClientId + "]";
 			objLogger.debug(sMethod + sMsg);
 			throw new AccountNotFoundException(csMsgAcctDoesNotBelongToClient);
 		}
 		return (objAccount);
 	}
 
-	
-	
 	//
 	// ### overload the getAccountsForClient() methods to use String or int input
 	// depending on the caller.
@@ -123,18 +121,17 @@ public class AccountService implements Constants {
 	public List<Account> getAccountsForClient(String sClientId)
 			throws DatabaseException, AccountNotFoundException, BadParameterException {
 		String sMethod = "getAccountsForClient(String): ";
-		
+
 		List<Account> lstAccounts;
-		if(Validate.isInt(sClientId)) {			
+		if (Validate.isInt(sClientId)) {
 			objLogger.debug(sMethod + "parseInt client id input paramenter: [" + sClientId + "]");
 			int iClientId = Integer.parseInt(sClientId);
 			lstAccounts = getAccountsForClient(iClientId);
-		}
-		else {			
+		} else {
 			String sMsg = "Error converting client id to int: [" + sClientId + "].";
 			objLogger.debug(sMethod + sMsg);
 			throw new BadParameterException(csMsgBadParamClientId);
-		}		
+		}
 		return (lstAccounts);
 	}
 
@@ -165,41 +162,40 @@ public class AccountService implements Constants {
 	}
 
 	//
-	//###
+	// ###
 	public List<Account> getAccountsForClientInRange(String sClientId, String sUpperRange, String sLowerRange)
 			throws DatabaseException, AccountNotFoundException, BadParameterException {
 		String sMethod = "getAccountsForClientInRange(String): ";
-		
+
 		List<Account> lstAccounts;
-		if(Validate.isInt(sClientId) && Validate.isInt(sUpperRange) && Validate.isInt(sLowerRange)) {			
-			objLogger.debug(sMethod + "parseInt input paramenters: sClientId: [" + sClientId 
-					+ "] sUpperRange: [" + sUpperRange + "] sLowerRange: [" + sLowerRange + "]");			
-			
+		if (Validate.isInt(sClientId) && Validate.isInt(sUpperRange) && Validate.isInt(sLowerRange)) {
+			objLogger.debug(sMethod + "parseInt input paramenters: sClientId: [" + sClientId + "] sUpperRange: ["
+					+ sUpperRange + "] sLowerRange: [" + sLowerRange + "]");
+
 			int iClientId = Integer.parseInt(sClientId);
 			int iUpperRange = Integer.parseInt(sUpperRange);
 			int iLowerRange = Integer.parseInt(sLowerRange);
-			
+
 			lstAccounts = getAccountsForClientInRange(iClientId, iUpperRange, iLowerRange);
-		}
-		else {			
-			String sMsg = "Error converting input to ints: sClientId: [" + sClientId 
-					+ "] sUpperRange: [" + sUpperRange +"] sLowerRange: [" + sLowerRange +"]";
+		} else {
+			String sMsg = "Error converting input to ints: sClientId: [" + sClientId + "] sUpperRange: [" + sUpperRange
+					+ "] sLowerRange: [" + sLowerRange + "]";
 			objLogger.debug(sMethod + sMsg);
 			throw new BadParameterException(csMsgBadParamNotInts);
-		}		
+		}
 		return (lstAccounts);
 	}
 
 	//
 	// ###
-	public List<Account> getAccountsForClientInRange(int iClientId, int iUpperRange, int iLowerRange) 
+	public List<Account> getAccountsForClientInRange(int iClientId, int iUpperRange, int iLowerRange)
 			throws DatabaseException, AccountNotFoundException {
 		String sMethod = "getAccountsForClientInRange(int): ";
 		List<Account> lstAccounts;
 		try {
-			objLogger.debug(sMethod + "Getting accounts in range for: iClientId: [" + iClientId 
-					+ "] iUpperRange: [" + iUpperRange + "] iLowerRange: [" + iLowerRange + "]");
-			
+			objLogger.debug(sMethod + "Getting accounts in range for: iClientId: [" + iClientId + "] iUpperRange: ["
+					+ iUpperRange + "] iLowerRange: [" + iLowerRange + "]");
+
 			lstAccounts = objAccountDAO.getAccountsForClientInRange(iClientId, iUpperRange, iLowerRange);
 
 			if (lstAccounts.size() > 0) {
@@ -211,7 +207,7 @@ public class AccountService implements Constants {
 				throw new AccountNotFoundException(sMsg);
 			}
 		} catch (SQLException objE) {
-			String sMsg = "Error with database getting accounts in range for client id: [" + iClientId 
+			String sMsg = "Error with database getting accounts in range for client id: [" + iClientId
 					+ "] iUpperRange: [" + iUpperRange + "]  iLowerRange: [" + iLowerRange + "]";
 			objLogger.error(sMethod + sMsg);
 			throw new DatabaseException(csMsgAccountsNotFound);
@@ -220,17 +216,18 @@ public class AccountService implements Constants {
 
 	}
 
-
 	//
-	// ### validate input parameters prior to sending to the DAO to add to the database. 
+	// ### validate input parameters prior to sending to the DAO to add to the
+	// database.
 	public Account addAccountForClient(AccountAddDTO objAccountAddDTO) throws DatabaseException, BadParameterException {
 		String sMethod = "addAccountForClient(String): ";
 		String sMsg = "";
-		
+
 		try {
 
-			//Expected the caller to do validation if required if this client already exists prior
-			//	to adding.  If not then database will throw the exception.
+			// Expected the caller to do validation if required if this client already
+			// exists prior
+			// to adding. If not then database will throw the exception.
 			String sClientId = objAccountAddDTO.getClientId();
 			sMsg = "Error converting client id to int: [" + sClientId + "]";
 			objLogger.debug(sMethod + "parseInt sClientId input paramenter: [" + sClientId + "]");
@@ -240,46 +237,46 @@ public class AccountService implements Constants {
 			String sAccountNumber = objAccountAddDTO.getAccountNumber();
 			sMsg = "Error converting account number to int: [" + sAccountNumber + "]";
 			objLogger.debug(sMethod + "parseInt sAccountNumber input paramenter: [" + sAccountNumber + "]");
-			Integer.parseInt(sClientId); //don't need the int value just checking that value is all numeric
-			
+			Integer.parseInt(sAccountNumber); // don't need the int value just checking that value is all numeric
+
 			if (sAccountNumber.length() != ciAccountTblAccountNumberLen) {
-				sMsg = "Account number is required to be 5 numberic in length: [" + sAccountNumber + "]";
+				sMsg = "Account number is required to be " + ciAccountTblAccountNumberLen + " numeric in length: [" + sAccountNumber + "]";
 				objLogger.debug(sMethod + sMsg);
 				throw new BadParameterException(sMsg);
 			}
 
 			String sAccountType = objAccountAddDTO.getAccountType().toUpperCase();
-			if ((sAccountType.equals(csAccountTypeValueChecking)) || sAccountType.equals(csAccountTypeValueSavings)){
-				//continue
+			if ((sAccountType.equals(csAccountTypeValueChecking)) || sAccountType.equals(csAccountTypeValueSavings)) {
+				// continue
 			} else {
-				
-				sMsg = "Account type is either: [" + csAccountTypeValueChecking + "] or: ["
-						+ csAccountTypeValueSavings + "] not: [" + sAccountType + "]";
+
+				sMsg = "Account type is either: [" + csAccountTypeValueChecking + "] or: [" + csAccountTypeValueSavings
+						+ "] not: [" + sAccountType + "]";
 				objLogger.debug(sMethod + sMsg);
 				throw new BadParameterException(sMsg);
-			}			
-			objAccountAddDTO.setAccountType(sAccountType); //set to validated case value
+			}
+			objAccountAddDTO.setAccountType(sAccountType); // set to validated case value
 
 			String sAccountBalance = objAccountAddDTO.getAccountBalance();
 			sMsg = "Error converting account balance to double: [" + sAccountBalance + "]";
-			objLogger.debug(sMethod + "parseInt sAccountNumber input paramenter: [" + sAccountBalance + "]");
+			objLogger.debug(sMethod + "parseInt sAccountBalance input paramenter: [" + sAccountBalance + "]");
 			double dAccountBalance = Double.parseDouble(sAccountBalance);
-			objAccountAddDTO.setAccountBalance(dAccountBalance);		
+			objAccountAddDTO.setAccountBalance(dAccountBalance);
 
-			//Attempt adding a new account for the client
+			// Attempt adding a new account for the client
 			try {
 
-			//Client objAddedClient = objClientDAO.addClient(objAddClientDTO);
-			Account objAccountAdded  = objAccountDAO.addRecord(objAccountAddDTO);
-			objLogger.debug(sMethod + "Account object created: [" + objAccountAdded.toString() + "]");
-			return objAccountAdded;
-			
+				// Client objAddedClient = objClientDAO.addClient(objAddClientDTO);
+				Account objAccountAdded = objAccountDAO.addRecord(objAccountAddDTO);
+				objLogger.debug(sMethod + "Account object created: [" + objAccountAdded.toString() + "]");
+				return objAccountAdded;
+
 			} catch (SQLException objE) {
-				sMsg = "Database error adding account for client id: [" + sClientId + "]"
-						+ " Account information: [" + objAccountAddDTO.toString() + "]";
+				sMsg = "Database error adding account for client id: [" + sClientId + "]" + " Account information: ["
+						+ objAccountAddDTO.toString() + "]";
 				objLogger.error(sMethod + sMsg + "[" + objE.getMessage() + "]");
 				throw new DatabaseException(sMsg);
-			}		
+			}
 
 		} catch (NumberFormatException objE) {
 			objLogger.error(sMethod + sMsg); // message set prior to causing the exception
@@ -287,6 +284,78 @@ public class AccountService implements Constants {
 		}
 	}
 
+	//
+	// ### Assume caller has validated client id.
+	// validate account type and balance for format and value
+	// generate random account number and check if it exists
+	public Account createNewAccountForClient(int iClientId, String sAccountType, String sAccountBalance)
+			throws BadParameterException, Exception {
+		String sMethod = "createNewAccountForClient(): ";
+		Account objNewAccount = new Account();
+
+		if ((csAccountTypeValueChecking.equalsIgnoreCase(sAccountType))
+				|| (csAccountTypeValueSavings.equalsIgnoreCase(sAccountType))) {
+
+			if (Validate.isDouble(sAccountBalance)) {
+
+				boolean bAccountExists = true;
+				String sAccountNumber = "";
+				do {
+					int iAccountNumber = Utility.getRandomIntBetween(ciAccountNumMinVal, ciAccountNumMaxVal);
+					sAccountNumber = Integer.toString(iAccountNumber);
+
+					if (sAccountNumber.length() < ciAccountTblAccountNumberLen) {
+						sAccountNumber = Utility.padIntLeadingZero(iClientId, ciAccountTblAccountNumberLen);
+					}
+
+					try {
+						// check if account number already exists
+						bAccountExists = doesAccountExist(sAccountNumber);
+					} catch (Exception objE) {
+						// any kind of exception here is a problem, throw it to caller.
+						String sMsg = "Exception occurred while accessing the database.";
+						throw new Exception(sMsg);
+					}
+
+				} while (bAccountExists);
+
+				// have account number not in database so use to add record.
+				AccountAddDTO objAccountAddDTO = new AccountAddDTO();
+				objAccountAddDTO.setClientId(Integer.toString(iClientId));
+				objAccountAddDTO.setAccountNumber(sAccountNumber);
+				objAccountAddDTO.setAccountType(sAccountType);
+				objAccountAddDTO.setAccountBalance(sAccountBalance); //already validated to be a double
+				//now add the record
+				objNewAccount= addAccountForClient(objAccountAddDTO);
+				
+			} else {
+				String sMsg = "Invalid balance parameter: [" + sAccountBalance + "] not a double.";
+				objLogger.debug(sMethod + sMsg);
+				throw new BadParameterException(csMsgBadParmAccountBalance);
+			}
+
+		} else {
+			String sMsg = "Account type is either: [" + csAccountTypeValueChecking + "] or: ["
+					+ csAccountTypeValueSavings + "] not: [" + sAccountType + "]";
+			objLogger.debug(sMethod + sMsg);
+			throw new BadParameterException(csMsgBadParamAccountTypes);
+		}
+
+		return objNewAccount;
+	}
+
+	public boolean doesAccountExist(String sAccountNumber) throws Exception {
+		boolean bAcctExists = true;
+
+		try {
+			bAcctExists = objAccountDAO.doesAccountExist(sAccountNumber);
+		} catch (Exception objE) {
+			// any kind of exception here is a problem, throw it to caller.
+			String sMsg = "Exception occurred while accessing the database.";
+			throw new Exception(sMsg);
+		}
+		return bAcctExists;
+	}
 
 	/*
 	

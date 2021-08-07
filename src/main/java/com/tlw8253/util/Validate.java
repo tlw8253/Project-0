@@ -14,15 +14,31 @@ public final class Validate {
 	//### Utility method to check if string is an primitive int
 	public static boolean isInt(String sValue) {
 		String sMethod = "isInt";
-		boolean bIsInt = false;
+		boolean bIsValid = false;
 		try {
 			objLogger.debug(sMethod + "Checking if string value of: [" + sValue + "] is an integer.");
 			Integer.parseInt(sValue);
-			bIsInt = true;
+			bIsValid = true;
 
 		} catch (NumberFormatException objE) {
 			objLogger.debug(sMethod + "String value of: [" + sValue + "] is NOT an integer.");		
 			}
-		return bIsInt;
+		return bIsValid;
+	}
+	
+	//
+	//### Utility method to check if string is an primitive int
+	public static boolean isDouble(String sValue) {
+		String sMethod = "isDouble";
+		boolean bIsValid = false;
+		try {
+			objLogger.debug(sMethod + "Checking if string value of: [" + sValue + "] is a double.");
+			Double.parseDouble(sValue);
+			bIsValid = true;
+
+		} catch (NumberFormatException objE) {
+			objLogger.debug(sMethod + "String value of: [" + sValue + "] is NOT a double.");		
+			}
+		return bIsValid;
 	}
 }
