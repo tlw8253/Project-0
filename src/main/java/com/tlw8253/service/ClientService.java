@@ -169,5 +169,12 @@ public class ClientService implements Constants{
 
 		return(bClientDelete);
 	}
+	
+	
+
+	/*
+	
+	*/
+
 
 }

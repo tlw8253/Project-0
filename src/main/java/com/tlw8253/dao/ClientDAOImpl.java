@@ -253,4 +253,8 @@ public class ClientDAOImpl implements Constants, ClientDAO {
 		return bClientDeleted;
 	}
 
+	
+	
+	
+	
 }

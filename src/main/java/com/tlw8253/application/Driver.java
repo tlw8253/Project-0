@@ -82,8 +82,8 @@ public class Driver implements Constants {
 		AccountService objAccountService = new AccountService();
 
 		try {
-			Account objNewAccount = objAccountService.createNewAccountForClient(4, csAccountTypeValueSavings, "5231.10");
-			objLogger.debug(sMethod + "objNewAccount: [" + objNewAccount.toString() + "]");
+//			Account objNewAccount = objAccountService.createNewAccountForClient(4, csAccountTypeValueSavings, "5231.10");
+//			objLogger.debug(sMethod + "objNewAccount: [" + objNewAccount.toString() + "]");
 			
 		} catch (Exception objE) {
 			objLogger.debug(sMethod + "Exception: [" + objE.getMessage() + "]");

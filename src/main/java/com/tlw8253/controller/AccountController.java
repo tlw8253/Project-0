@@ -108,7 +108,7 @@ public class AccountController implements Controller, Constants{
 		objAccountAddDTO.setAccountBalance(sAccountBalance);	
 		objAccountAddDTO.setClientId(sClientId);
 		
-		Account objAccount = objAccountService.addAccountForClient(objAccountAddDTO);
+		Account objAccount = objAccountService.addAccountForClient(objAccountAddDTO);		
 		objLogger.debug(sMethod + "objAccount: [" + objAccount.toString() + "]");
 		
 		objCtx.status(ciStatusCodeSuccess);

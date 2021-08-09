@@ -37,7 +37,6 @@ public interface Constants {
 	//database constants 
 	String csDatabaseName = "project0";							//database name
 	String csClientTable = csDatabaseName + "." + "client";		//client table
-//	String csPhoneTable = csDatabaseName + "." + "phone";		//phone table
 	String csAccountTable = csDatabaseName + "." + "account";	//account table
 	
 	//client table constants these must match the table attributes
@@ -73,20 +72,28 @@ public interface Constants {
 
 	//Define program messages to use in the program and for testing
 	String csMsgDB_ErrorGettingAllClients = "Error with database getting all clients.";
-	String csMsgBadParamClientId = "Client Id must be a number.";
-	String csMsgClientNotFound = "Client was not found in the database.";
 	String csMsgDB_ErrorGettingByClientId = "Database error getting the client by id.";
-	String csMsgBadParamClientName = "Client first and last name must contain values.";
 	String csMsgDB_ErrorAddingClient = "Database error when adding a client.";
 	String csMsgDB_ErrorUpdatingClient = "Database error when updating client information.";
 	String csMsgDB_ErrorDeletingClient = "Database error when deleting client information.";
+	String csMsgDB_ErrorAddingAccountForClient = "Database error while adding a new account for a client.";
+	String csMsgDB_ErrorDeletingAccountForClient = "Database error while deleteing a client's account.";
+	String csMsgDB_ErrorUpdatingAccountForClient = "Database error while updating an existing account for a client.";
+	String csMsgDB_ErrorGettingAccount = "Database error while getting an account.";
+	
+	String csMsgBadParamClientId = "Client Id must be a number.";
+	String csMsgBadParamClientName = "Client first and last name must contain values.";
 	String csMsgBadParamNotInts = "One or more parameters are not numbers.";
-	String csMsgAccountsNotFound = "Accounts were not found in the database for the client.";
 	String csMsgBadParamAcctNumLen = "Account number length is invalid must be " + ciAccountTblAccountNumberLen + " in length.";
 	String csMsgBadParamAcctNumNotNumber = "Account number must be a number.";
-	String csMsgAcctDoesNotBelongToClient = "Account number not assigned to this client.";
 	String csMsgBadParamAccountTypes = "Valid account types are: " + csAccountTypeValueChecking + " or " + csAccountTypeValueSavings;
 	String csMsgBadParmAccountBalance = "Account balance did not tranlate to numeric value.";
+
+	String csMsgClientNotFound = "Client was not found in the database.";
+	String csMsgAccountNotFound = "Account not found in the database for the client.";
+	String csMsgAccountsNotFound = "Accounts were not found in the database for the client.";
+	String csMsgAcctDoesNotBelongToClient = "Account number not assigned to this client.";
+
 }
 
 
