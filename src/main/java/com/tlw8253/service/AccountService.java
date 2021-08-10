@@ -86,7 +86,7 @@ public class AccountService implements Constants {
 			objAccount = objAccountDAO.getByRecordIdentifer(sAccountNumber);
 			if (objAccount == null) {
 				objLogger.debug(sMethod + "Account number: [" + sAccountNumber + "] not found in database.");
-				throw new AccountNotFoundException(csMsgAccountNotFound);
+				throw new AccountNotFoundException(csMsgAccountNotFoundForClient);
 			} // else objAccount is returned
 
 		} catch (SQLException objE) {
@@ -139,7 +139,7 @@ public class AccountService implements Constants {
 				return (lstAccounts);
 			} catch (AccountNotFoundException objE) {
 				objLogger.debug(sMethod + "No accounts found for client id: [" + sClientId + "]");
-				throw new AccountNotFoundException(csMsgAccountsNotFound);
+				throw new AccountNotFoundException(csMsgAccountsNotFoundForClient);
 			}
 
 		} else {
@@ -172,7 +172,7 @@ public class AccountService implements Constants {
 		} catch (SQLException objE) {
 			String sMsg = "Error with database getting all accounts for client id: [" + iClientId + "].";
 			objLogger.warn(sMethod + sMsg);
-			throw new DatabaseException(csMsgAccountsNotFound);
+			throw new DatabaseException(csMsgAccountsNotFoundForClient);
 		}
 		return (lstAccounts);
 
@@ -198,10 +198,10 @@ public class AccountService implements Constants {
 				lstAccounts = getAccountsForClientInRange(iClientId, iUpperRange, iLowerRange);
 			} catch (AccountNotFoundException objE) {
 				objLogger.debug(sMethod + objE.getMessage());
-				throw new DatabaseException(csMsgAccountsNotFound);
+				throw new DatabaseException(csMsgAccountsNotFoundForClient);
 			} catch (DatabaseException objE) {
 				objLogger.debug(sMethod + objE.getMessage());
-				throw new DatabaseException(csMsgAccountsNotFound);
+				throw new DatabaseException(csMsgAccountsNotFoundForClient);
 			}
 
 		} else {
@@ -237,7 +237,7 @@ public class AccountService implements Constants {
 			String sMsg = "Error with database getting accounts in range for client id: [" + iClientId
 					+ "] iUpperRange: [" + iUpperRange + "]  iLowerRange: [" + iLowerRange + "]";
 			objLogger.error(sMethod + sMsg);
-			throw new DatabaseException(csMsgAccountsNotFound);
+			throw new DatabaseException(csMsgAccountsNotFoundForClient);
 		}
 		return (lstAccounts);
 
@@ -379,13 +379,13 @@ public class AccountService implements Constants {
 					String sMsg = "Account account number: [" + sAccountNumber
 							+ "] does not belong to this client id: [" + iClientId + "]";
 					objLogger.debug(sMethod + sMsg);
-					throw new AccountNotFoundException(csMsgAccountNotFound);
+					throw new AccountNotFoundException(csMsgAccountNotFoundForClient);
 				}
 
 			} catch (AccountNotFoundException objE) {
 				String sMsg = "Account not found for account number: [" + sAccountNumber + "].";
 				objLogger.debug(sMethod + sMsg);
-				throw new AccountNotFoundException(csMsgAccountNotFound);
+				throw new AccountNotFoundException(csMsgAccountNotFoundForClient);
 			} catch (SQLException objE) {
 				String sMsg = "Error updating account with account number: [" + sAccountNumber + "]";
 				objLogger.error(sMethod + sMsg);
@@ -427,11 +427,12 @@ public class AccountService implements Constants {
 								+ iClientId + "]");
 
 						try {
+							objLogger.trace(sMethod + "calling: deleteAccountForClient(" + iClientId + "," + sAccountNumber + ")");
 							deleteAccountForClient(iClientId, sAccountNumber);
 						} catch (AccountNotFoundException objE) {
 							objLogger.debug(sMethod + "Record not not found for delete account number: ["
 									+ sAccountNumber + "] from client id: [" + iClientId + "]");
-							throw new AccountNotFoundException(csMsgAccountNotFound);
+							throw new AccountNotFoundException(csMsgAccountNotFoundForClient);
 
 						} catch (DatabaseException objE) {// this is only exception expected
 							objLogger.debug(sMethod + "databse error deleting account number: [" + sAccountNumber
@@ -466,7 +467,8 @@ public class AccountService implements Constants {
 	// Get the account by account number to see if it exist
 	// If account exists then check if it belongs to this client id
 	// If it is this clients account, then delete it
-	public boolean deleteAccountForClient(int iClientId, String sAccountNumber)
+	//public boolean deleteAccountForClient(int iClientId, String sAccountNumber)
+	public void deleteAccountForClient(int iClientId, String sAccountNumber)
 			throws DatabaseException, AccountNotFoundException, BadParameterException {
 		String sMethod = "deleteAccountForClient(int,String): ";
 		boolean bRecordDeleted = false;
@@ -495,13 +497,18 @@ public class AccountService implements Constants {
 					objLogger.debug(sMethod + sMsg);
 					throw new AccountNotFoundException(csMsgAcctDoesNotBelongToClient);
 				}
+			}else {
+				String sMsg = "Account with account number: [" + sAccountNumber
+						+ "] not found in database.";
+				objLogger.debug(sMethod + sMsg);
+				throw new AccountNotFoundException(csMsgAccountNotFound);
 			}
 
 		} catch (AccountNotFoundException objE) {
 			String sMsg = "Account with account number: [" + sAccountNumber
 					+ "] not found in database for delete processing.";
 			objLogger.debug(sMethod + sMsg);
-			throw new AccountNotFoundException(csMsgAccountNotFound);
+			throw new AccountNotFoundException(csMsgAccountNotFoundForClient);
 		} catch (SQLException objE) {
 			String sMsg = "Database error while deleteing account number: [" + sAccountNumber
 					+ "] belonging to client id: [" + iClientId + "].";
@@ -513,20 +520,25 @@ public class AccountService implements Constants {
 
 		}
 
-		return bRecordDeleted;
+		//return bRecordDeleted;
 	}
 
 	//
 	// ###
-	public boolean doesAccountExist(String sAccountNumber) throws Exception {
-		boolean bAcctExists = true;
+	public boolean doesAccountExist(String sAccountNumber) throws DatabaseException, AccountNotFoundException {
+		String sMethod = "doesAccountExist(String): ";
+		boolean bAcctExists = false;
 
+		objLogger.trace(sMethod + "Entered.");
 		try {
+			objLogger.trace(sMethod + "calling: objAccountDAO.doesAccountExist("+sAccountNumber+")");
 			bAcctExists = objAccountDAO.doesAccountExist(sAccountNumber);
-		} catch (Exception objE) {
-			// any kind of exception here is a problem, throw it to caller.
-			String sMsg = "Exception occurred while accessing the database.";
-			throw new Exception(sMsg);
+			objLogger.debug(sMethod + "account with account number: ["+ sAccountNumber + "] does exists.");
+			bAcctExists = true;
+		} catch (AccountNotFoundException objE) {
+			String sMsg = "Account with number:["+sAccountNumber+"] does not exist.";
+			objLogger.debug(sMethod + sMsg);
+			throw new AccountNotFoundException(sMsg);
 		}
 		return bAcctExists;
 	}

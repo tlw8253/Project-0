@@ -36,7 +36,7 @@ public interface Constants {
 	
 	//database constants 
 	String csDatabaseName = "project0";							//database name
-	String csClientTable = csDatabaseName + "." + "client";		//client table
+	String csClientTable = csDatabaseName + "." + "client";		//client table project0.client
 	String csAccountTable = csDatabaseName + "." + "account";	//account table
 	
 	//client table constants these must match the table attributes
@@ -90,8 +90,9 @@ public interface Constants {
 	String csMsgBadParmAccountBalance = "Account balance did not tranlate to numeric value.";
 
 	String csMsgClientNotFound = "Client was not found in the database.";
-	String csMsgAccountNotFound = "Account not found in the database for the client.";
-	String csMsgAccountsNotFound = "Accounts were not found in the database for the client.";
+	String csMsgAccountNotFound = "Account not found in the database for the account number.";
+	String csMsgAccountNotFoundForClient = "Account not found in the database for the client.";
+	String csMsgAccountsNotFoundForClient = "Accounts were not found in the database for the client.";
 	String csMsgAcctDoesNotBelongToClient = "Account number not assigned to this client.";
 
 }

@@ -14,6 +14,7 @@ import com.tlw8253.dto.AccountEditDTO;
 import com.tlw8253.dto.AddOrEditClientDTO;
 import com.tlw8253.model.Account;
 import com.tlw8253.model.Client;
+import com.tlw8253.exception.*;
 
 import io.javalin.Javalin;
 import io.javalin.http.Handler;
@@ -225,44 +226,6 @@ public class ClientController implements Controller, Constants {
 
 	};
 
-	//
-	// ###- `DELETE /clients/{id}`: Delete client with an id of X (if the client
-	// exists)
-	private Handler deleteClientById = (objCtx) -> {
-		String sMethod = "deleteClientById(): ";
-		objLogger.trace(sMethod + "Entered");
-
-		Map<String, String> mPathParmaMap = objCtx.pathParamMap();
-		objLogger.debug(sMethod + "Context parameter map: [" + mPathParmaMap + "]");
-
-		String sClientId = objCtx.pathParam(csParamClientId);
-		objLogger.debug(sMethod + "Context parameter client id: [" + sClientId + "]");
-		
-		//first see if client exists
-		objLogger.debug(sMethod + "Checking to see if client id: [" + sClientId + "] is in the database.");
-		objClientService.getClientById(sClientId);  //exception thrown will prevent rest of this method to complete
-		objLogger.debug(sMethod + "Client id: [" + sClientId + "] is in the database.");
-
-		//first we must delete all accounts for this client
-		boolean bAccountsDeleted = objAccountService.deleteAllAccountsForClient(sClientId);
-		
-		if (bAccountsDeleted) {
-			objLogger.debug(sMethod + "all accounts if any have been deleted from client id: [" + sClientId + "]");
-			objLogger.debug(sMethod + "Calling to delete from dabase with client id: [" + sClientId + "]");
-			objClientService.deleteClient(sClientId);
-			objCtx.status(ciStatusCodeSuccess);
-			objCtx.json("Client with id: [" + sClientId + "] and their accounts removed from database.");
-			
-		}else {
-			String sMsg = "Error deleting client id: [" + sClientId + "] from data base.  Issue deleting thier accounts.";
-			objLogger.debug(sMethod + sMsg);
-			objCtx.status(ciStatusCodeSuccess);
-			objCtx.json(sMsg);
-		}
-		
-		
-
-	};
 
 	//
 	// ### - `GET
@@ -422,6 +385,46 @@ public class ClientController implements Controller, Constants {
 		objCtx.json(objClient); // return the client with the account added
 
 	};
+	
+	
+	//
+	// ###- `DELETE /clients/{id}`: Delete client with an id of X (if the client
+	// exists)
+	private Handler deleteClientById = (objCtx) -> {
+		String sMethod = "deleteClientById(): ";
+		objLogger.trace(sMethod + "Entered");
+
+		Map<String, String> mPathParmaMap = objCtx.pathParamMap();
+		objLogger.debug(sMethod + "Context parameter map: [" + mPathParmaMap + "]");
+
+		String sClientId = objCtx.pathParam(csParamClientId);
+		objLogger.debug(sMethod + "Context parameter client id: [" + sClientId + "]");
+		
+		//first see if client exists
+		objLogger.debug(sMethod + "Checking to see if client id: [" + sClientId + "] is in the database.");
+		objClientService.getClientById(sClientId);  //exception thrown will prevent rest of this method to complete
+		objLogger.debug(sMethod + "Client id: [" + sClientId + "] is in the database.");
+
+		//first we must delete all accounts for this client
+		boolean bAccountsDeleted = objAccountService.deleteAllAccountsForClient(sClientId);
+		
+		if (bAccountsDeleted) {
+			objLogger.debug(sMethod + "all accounts if any have been deleted from client id: [" + sClientId + "]");
+			objLogger.debug(sMethod + "Calling to delete from dabase with client id: [" + sClientId + "]");
+			
+			objClientService.deleteClient(sClientId);
+			objCtx.status(ciStatusCodeSuccess);
+			objCtx.json("Client with id: [" + sClientId + "] and their accounts removed from database.");
+			
+		}else {
+			String sMsg = "Error deleting client id: [" + sClientId + "] from data base.  Issue deleting thier accounts.";
+			objLogger.debug(sMethod + sMsg);
+			objCtx.status(ciStatusCodeSuccess);
+			objCtx.json(sMsg);
+		}		
+
+	};
+
 
 	//
 	// ### - `DELETE /clients/{client_id}/accounts/{account_id}`: Delete account
@@ -447,14 +450,61 @@ public class ClientController implements Controller, Constants {
 		// First make sure client exists
 		Client objClient = objClientService.getClientById(sClientId);
 
-		objLogger.debug(sMethod + "Calling to delete account number: [" + sAccountNumber
-				+ "] from dabase with client id: [" + sClientId + "]");
+		objAccountService.deleteAccountForClient(objClient.getClientId(), sAccountNumber);
+		objCtx.status(ciStatusCodeSuccess);
+		objCtx.json("Account number: [" + sAccountNumber + "] for Client with id: [" + sClientId
+				+ "] removed from database.");
+
 		
-		if (objAccountService.deleteAccountForClient(objClient.getClientId(), sAccountNumber)) {
+/*
+		//check if account exists
+		objLogger.debug(sMethod + "Calling objAccountService.doesAccountExist(" + sAccountNumber + ")");
+		if (objAccountService.doesAccountExist(sAccountNumber)) {
+			objLogger.debug(sMethod + "Calling objAccountService.deleteAccountForClient(" + sClientId
+					+ "," + sAccountNumber + ")");
+			objAccountService.deleteAccountForClient(objClient.getClientId(), sAccountNumber);
 			objCtx.status(ciStatusCodeSuccess);
 			objCtx.json("Account number: [" + sAccountNumber + "] for Client with id: [" + sClientId
 					+ "] removed from database.");
+			
+		}else {
+			objLogger.debug(sMethod + "Account number: [" + sAccountNumber + "] with client id: [" + sClientId + "] not found.");
+			
+			objCtx.status(ciStatusCodeSuccessNoContent);
+			objCtx.json(csMsgAccountNotFoundForClient);
+
 		}
+			
+		
+/*		
+		try {
+			objLogger.debug(sMethod + "Calling objAccountService.deleteAccountForClient(" + sClientId
+					+ "," + sAccountNumber + ")");
+			objAccountService.deleteAccountForClient(objClient.getClientId(), sAccountNumber);
+			objCtx.status(ciStatusCodeSuccess);
+			objCtx.json("Account number: [" + sAccountNumber + "] for Client with id: [" + sClientId
+					+ "] removed from database.");
+
+		}catch(AccountNotFoundException objE) {
+			objLogger.debug(sMethod + "Account number: [" + sAccountNumber + "] with client id: [" + sClientId + "] not found.");
+			
+			objCtx.status(ciStatusCodeSuccessNoContent);
+			objCtx.json(csMsgAccountNotFoundForClient);
+		}
+		
+*/		
+		//boolean bDeleted = objAccountService.deleteAccountForClient(objClient.getClientId(), sAccountNumber);
+//		objAccountService.deleteAccountForClient(objClient.getClientId(), sAccountNumber);
+//		if (bDeleted) {
+//			objLogger.debug(sMethod + "Record with client id: [" + sClientId + "] deleted from database.");
+//			objCtx.status(ciStatusCodeSuccess);
+//			objCtx.json("Account number: [" + sAccountNumber + "] for Client with id: [" + sClientId
+//					+ "] removed from database.");
+//		}else {
+//			objLogger.debug(sMethod + "Record with client id: [" + sClientId + "] NOT deleted from database.");
+//			objCtx.status(ciStatusCodeSuccessNoContent);
+//			objCtx.json(csMsgAccountNotFoundForClient);
+//		}
 
 	};
 

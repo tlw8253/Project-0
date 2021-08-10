@@ -16,6 +16,8 @@ import com.tlw8253.dto.AccountAddDTO;
 import com.tlw8253.dto.AccountEditDTO;
 import com.tlw8253.dto.AddDTO;
 import com.tlw8253.dto.EditDTO;
+import com.tlw8253.exception.AccountNotFoundException;
+import com.tlw8253.exception.DatabaseException;
 import com.tlw8253.model.Account;
 import com.tlw8253.util.ConnectionUtility;
 
@@ -332,7 +334,7 @@ public class AccountDAOImpl implements GenericDAO<Account>, Constants {
 
 	//
 	// ###
-	public boolean doesAccountExist(String sAccountNumber) throws Exception {
+	public boolean doesAccountExist(String sAccountNumber) throws DatabaseException, AccountNotFoundException {
 		String sMethod = "doesAccountExist(): ";
 		boolean bAccountExists = false;
 
@@ -351,17 +353,18 @@ public class AccountDAOImpl implements GenericDAO<Account>, Constants {
 				objLogger
 						.debug(sMethod + "account record with identifer: [" + sAccountNumber + "] exists in database.");
 				bAccountExists = true;
+				return bAccountExists;
 			} else
 				objLogger.debug(sMethod + "account record with identifer: [" + sAccountNumber
 						+ "] does NOT exists in database.");
+			throw new AccountNotFoundException(csMsgAccountNotFound);
 
-		} catch (Exception objE) {
-			objLogger.debug(sMethod + "objE: [" + objE.getMessage() + "]");
-			// any kind of exception here is a problem, throw it to caller.
+		} catch (SQLException objE) {
 			String sMsg = "Exception occurred while accessing the database.";
-			throw new Exception(sMsg);
+			objLogger.debug(sMethod + sMsg + " [objE: [" + objE.getMessage() + "]]");
+			throw new DatabaseException(csMsgDB_ErrorGettingAccount);
 		}
-		return bAccountExists;
+		
 	}
 
 }
