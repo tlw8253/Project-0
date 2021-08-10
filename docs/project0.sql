@@ -87,7 +87,7 @@ VALUES
 -- requirement data load to delete an account for a client
 INSERT INTO account (acct_number, acct_type, acct_balance, client_id)
 VALUES 
-('00013', 'SAVINGS', 20000.00, 2),
+-- ('00013', 'SAVINGS', 20000.00, 2),
 ('00014', 'SAVINGS', 20000.01, 2);
 
 SELECT * FROM project0.account WHERE client_id = 1 AND acct_balance >= 400.00 ORDER BY acct_balance;
@@ -99,7 +99,7 @@ SELECT * FROM project0.account WHERE client_id = 1 AND acct_balance >= 400 AND a
 UPDATE client SET client_first_name = 'Robert', client_last_name = 'Patrick', client_nickname = 'T-1000' WHERE client_id = 4;
 SELECT * FROM client;
 SELECT * FROM account;
-SELECT * FROM account WHERE client_id = 4 ORDER BY acct_number;
+SELECT * FROM account WHERE client_id = 6 ORDER BY acct_number;
 
 SELECT * FROM project0.account WHERE client_id = 1  AND acct_balance >= 5  AND acct_balance <= 20  ORDER BY acct_balance
 

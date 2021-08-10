@@ -23,7 +23,7 @@ public class ConnectionUtility {
 		DriverManager.registerDriver(new Driver());
 		String sURL = System.getenv("p0_db_url");
 		
-		sURL = "jdbc:mariadb://localhost:3306/project0";
+		//sURL = "jdbc:mariadb://localhost:3306/project0";
 		
 		String sUsername = System.getenv("p0_db_username");
 		String sPassword = System.getenv("p0_db_password");
