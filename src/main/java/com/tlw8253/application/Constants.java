@@ -34,6 +34,12 @@ public interface Constants {
 	int ciMinNameLen = 5;
 	int ciListingPort = 3005;
 	
+	//processing status code
+	int ciDelAcctSuccess = 10;
+	int ciDelAcctRecordNotFound = 20;
+	int ciDelDB_Error = 30;
+	int ciDelAccountNotClients = 40;
+	
 	//database constants 
 	String csDatabaseName = "project0";							//database name
 	String csClientTable = csDatabaseName + "." + "client";		//client table project0.client

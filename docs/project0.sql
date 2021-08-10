@@ -36,10 +36,13 @@ VALUES
 SELECT * FROM client;
 SELECT * FROM project0.client;
 
-CREATE TABLE account(
+CREATE TABLE account( -- bring back auto increment to use as bases for account number
+					  -- if there was time, could have save last account number in a file and 
+					  -- increment for next key, could consider using return (int) ((Math.random() * (max - min)) + min); for now
 -- acct_id INTEGER PRIMARY KEY AUTO_INCREMENT,
 -- acct_number VARCHAR(5) NOT NULL UNIQUE,  -- CHECK(LENGTH(acct_number) = 5),
-acct_number VARCHAR(5) PRIMARY KEY NOT NULL,
+-- acct_number VARCHAR(5) NOT NULL UNIQUE,
+acct_number VARCHAR(5) PRIMARY key NOT NULL, -- for the MVP program will not generate this key
 acct_type VARCHAR(50) NOT NULL,
 acct_balance DOUBLE NOT NULL,
 client_id INTEGER NOT NULL,
@@ -50,11 +53,11 @@ CONSTRAINT `fk_accountnumber_client`
 -- initial data load
 INSERT INTO account (acct_number, acct_type, acct_balance, client_id)
 VALUES 
-('12345', 'CHECKING', 10000.00, 1),
-('23456', 'SAVINGS', 1000000.00, 1),
-('34567', 'CHECKING', 500000.00, 2),
-('45678', 'CHECKING', 2500.25, 3),
-('56789', 'CHECKING', 10000.36, 4);
+('00001', 'CHECKING', 10000.00, 1),
+('00002', 'SAVINGS', 1000000.00, 1),
+('00003', 'CHECKING', 500000.00, 2),
+('00004', 'CHECKING', 2500.25, 3),
+('00005', 'CHECKING', 10000.36, 4);
 
 -- INSERT INTO account (acct_number, acct_type, acct_balance, client_id)
 -- VALUES 
@@ -62,6 +65,7 @@ VALUES
 
 
 SELECT * FROM account;
+SELECT * FROM account WHERE client_id = 4 ORDER BY acct_number;
 SELECT * FROM account WHERE acct_number = '34567';
 SELECT * FROM project0.account WHERE acct_number = 34567;
 
@@ -72,18 +76,19 @@ SELECT * FROM project0.account WHERE client_id = 4;
 -- requirement data load <= 2000 && >= 400
 INSERT INTO account (acct_number, acct_type, acct_balance, client_id)
 VALUES 
-('90123', 'SAVINGS', 399.99, 1),
-('01234', 'SAVINGS', 400.00, 1),
-('10000', 'SAVINGS', 400.01, 1),
-('10001', 'SAVINGS', 1000.00, 1),
-('10002', 'SAVINGS', 1999.99, 1),
-('10003', 'SAVINGS', 2000.00, 1),
-('10004', 'SAVINGS', 2000.01, 1);
+('00006', 'SAVINGS', 399.99, 1),
+('00007', 'SAVINGS', 400.00, 1),
+('00008', 'SAVINGS', 400.01, 1),
+('00009', 'SAVINGS', 1000.00, 1),
+('00010', 'SAVINGS', 1999.99, 1),
+('00011', 'SAVINGS', 2000.00, 1),
+('00012', 'SAVINGS', 2000.01, 1);
 
+-- requirement data load to delete an account for a client
 INSERT INTO account (acct_number, acct_type, acct_balance, client_id)
 VALUES 
-('00003', 'SAVINGS', 20000.00, 2),
-('00004', 'SAVINGS', 20000.01, 2);
+('00013', 'SAVINGS', 20000.00, 2),
+('00014', 'SAVINGS', 20000.01, 2);
 
 SELECT * FROM project0.account WHERE client_id = 1 AND acct_balance >= 400.00 ORDER BY acct_balance;
 SELECT * FROM project0.account WHERE client_id = 1 AND acct_balance <= 2000.00 ORDER BY acct_balance;
@@ -91,38 +96,12 @@ SELECT * FROM project0.account WHERE client_id = 1 AND acct_balance >= 400.00 AN
 
 SELECT * FROM project0.account WHERE client_id = 1 AND acct_balance >= 400 AND acct_balance <= 2000 ORDER BY acct_balance
 
+UPDATE client SET client_first_name = 'Robert', client_last_name = 'Patrick', client_nickname = 'T-1000' WHERE client_id = 4;
+SELECT * FROM client;
+SELECT * FROM account;
+SELECT * FROM account WHERE client_id = 4 ORDER BY acct_number;
 
--- future consideration create account_type table to store the types
--- futrue consideration CREATE TABLE account_history table to record account transactions
-
-
-
-
-
-
-
-
-
-CREATE TABLE phone_number(
-phone_number_id INTEGER PRIMARY KEY AUTO_INCREMENT,
-country_code CHAR(10) NOT NULL, -- formatted ex 1-345 Cayman Islands, 44-1534 Jersey
-phone_number CHAR(10) NOT NULL, -- mandatory 10 CHAR no formatting
-client_id INTEGER NOT NULL,
-CONSTRAINT `fk_phonenumber_client` 
-	FOREIGN KEY (client_id) REFERENCES client (client_id)
-);
-
-INSERT INTO phone_number (country_code, phone_number, client_id)
-VALUES 
-('1', '5551234567', 1),
-('1', '9253213211', 1),
-('1', '7194577890', 2),
-('44', '5553456789', 3),
-('1-345', '5558971234', 4);
-
-SELECT * FROM phone_number;
-
-
+SELECT * FROM project0.account WHERE client_id = 1  AND acct_balance >= 5  AND acct_balance <= 20  ORDER BY acct_balance
 
 -- future consideration create account_type table to store the types
 -- futrue consideration CREATE TABLE account_history table to record account transactions

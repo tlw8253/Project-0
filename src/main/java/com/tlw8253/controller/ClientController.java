@@ -226,7 +226,6 @@ public class ClientController implements Controller, Constants {
 
 	};
 
-
 	//
 	// ### - `GET
 	// /clients/{client_id}/accounts?amountLessThan=2000&amountGreaterThan=400`:
@@ -385,8 +384,7 @@ public class ClientController implements Controller, Constants {
 		objCtx.json(objClient); // return the client with the account added
 
 	};
-	
-	
+
 	//
 	// ###- `DELETE /clients/{id}`: Delete client with an id of X (if the client
 	// exists)
@@ -399,32 +397,32 @@ public class ClientController implements Controller, Constants {
 
 		String sClientId = objCtx.pathParam(csParamClientId);
 		objLogger.debug(sMethod + "Context parameter client id: [" + sClientId + "]");
-		
-		//first see if client exists
+
+		// first see if client exists
 		objLogger.debug(sMethod + "Checking to see if client id: [" + sClientId + "] is in the database.");
-		objClientService.getClientById(sClientId);  //exception thrown will prevent rest of this method to complete
+		objClientService.getClientById(sClientId); // exception thrown will prevent rest of this method to complete
 		objLogger.debug(sMethod + "Client id: [" + sClientId + "] is in the database.");
 
-		//first we must delete all accounts for this client
+		// first we must delete all accounts for this client
 		boolean bAccountsDeleted = objAccountService.deleteAllAccountsForClient(sClientId);
-		
+
 		if (bAccountsDeleted) {
 			objLogger.debug(sMethod + "all accounts if any have been deleted from client id: [" + sClientId + "]");
 			objLogger.debug(sMethod + "Calling to delete from dabase with client id: [" + sClientId + "]");
-			
+
 			objClientService.deleteClient(sClientId);
 			objCtx.status(ciStatusCodeSuccess);
 			objCtx.json("Client with id: [" + sClientId + "] and their accounts removed from database.");
-			
-		}else {
-			String sMsg = "Error deleting client id: [" + sClientId + "] from data base.  Issue deleting thier accounts.";
+
+		} else {
+			String sMsg = "Error deleting client id: [" + sClientId
+					+ "] from data base.  Issue deleting thier accounts.";
 			objLogger.debug(sMethod + sMsg);
 			objCtx.status(ciStatusCodeSuccess);
 			objCtx.json(sMsg);
-		}		
+		}
 
 	};
-
 
 	//
 	// ### - `DELETE /clients/{client_id}/accounts/{account_id}`: Delete account
@@ -447,64 +445,47 @@ public class ClientController implements Controller, Constants {
 		String sAccountNumber = objCtx.pathParam(csParamAccountNumber);
 		objLogger.debug(sMethod + "Context parameter client id: [" + sAccountNumber + "]");
 
-		// First make sure client exists
+		// First make sure client exists, if not an exception will be thrown
+		objLogger.debug(sMethod + "Checking if client id: [" + sClientId + "] exists in database.");
 		Client objClient = objClientService.getClientById(sClientId);
+		objLogger.debug(sMethod + "Client exists: [" + objClient.toString() + "]");
 
-		objAccountService.deleteAccountForClient(objClient.getClientId(), sAccountNumber);
+		objLogger.debug(
+				sMethod + "Attempting to delete account: [" + sAccountNumber + "] for client id: [" + sClientId + "]");
+		int iDeleteStatus = objAccountService.deleteAccountForClient(objClient.getClientId(), sAccountNumber);
+
+		String sMsg = "";
+		
+		switch (iDeleteStatus) {
+		case ciDelAcctSuccess: {
+			sMsg = "Account number: [" + sAccountNumber + "] for Client with id: [" + sClientId
+					+ "] removed from database.";
+			objLogger.debug(sMethod + sMsg);
+			break;
+		}
+		case ciDelAcctRecordNotFound: {
+			sMsg = "Account number: [" + sAccountNumber + "] for Client with id: [" + sClientId
+					+ "] was not found in the database.";
+			objLogger.debug(sMethod + sMsg);
+			break;
+		}
+		case ciDelAccountNotClients: {
+			sMsg = "Account number: [" + sAccountNumber + "] does not belong to Client with id: [" + sClientId
+					+ "]";
+			objLogger.debug(sMethod + sMsg);
+			break;
+			
+		}
+		default:
+			sMsg = "Error attempting to delete ccount number: [" + sAccountNumber + "] for Client with id: [" + sClientId
+					+ "] from the database.";
+			objLogger.debug(sMethod + sMsg);
+			break;
+
+		}
+
 		objCtx.status(ciStatusCodeSuccess);
-		objCtx.json("Account number: [" + sAccountNumber + "] for Client with id: [" + sClientId
-				+ "] removed from database.");
-
-		
-/*
-		//check if account exists
-		objLogger.debug(sMethod + "Calling objAccountService.doesAccountExist(" + sAccountNumber + ")");
-		if (objAccountService.doesAccountExist(sAccountNumber)) {
-			objLogger.debug(sMethod + "Calling objAccountService.deleteAccountForClient(" + sClientId
-					+ "," + sAccountNumber + ")");
-			objAccountService.deleteAccountForClient(objClient.getClientId(), sAccountNumber);
-			objCtx.status(ciStatusCodeSuccess);
-			objCtx.json("Account number: [" + sAccountNumber + "] for Client with id: [" + sClientId
-					+ "] removed from database.");
-			
-		}else {
-			objLogger.debug(sMethod + "Account number: [" + sAccountNumber + "] with client id: [" + sClientId + "] not found.");
-			
-			objCtx.status(ciStatusCodeSuccessNoContent);
-			objCtx.json(csMsgAccountNotFoundForClient);
-
-		}
-			
-		
-/*		
-		try {
-			objLogger.debug(sMethod + "Calling objAccountService.deleteAccountForClient(" + sClientId
-					+ "," + sAccountNumber + ")");
-			objAccountService.deleteAccountForClient(objClient.getClientId(), sAccountNumber);
-			objCtx.status(ciStatusCodeSuccess);
-			objCtx.json("Account number: [" + sAccountNumber + "] for Client with id: [" + sClientId
-					+ "] removed from database.");
-
-		}catch(AccountNotFoundException objE) {
-			objLogger.debug(sMethod + "Account number: [" + sAccountNumber + "] with client id: [" + sClientId + "] not found.");
-			
-			objCtx.status(ciStatusCodeSuccessNoContent);
-			objCtx.json(csMsgAccountNotFoundForClient);
-		}
-		
-*/		
-		//boolean bDeleted = objAccountService.deleteAccountForClient(objClient.getClientId(), sAccountNumber);
-//		objAccountService.deleteAccountForClient(objClient.getClientId(), sAccountNumber);
-//		if (bDeleted) {
-//			objLogger.debug(sMethod + "Record with client id: [" + sClientId + "] deleted from database.");
-//			objCtx.status(ciStatusCodeSuccess);
-//			objCtx.json("Account number: [" + sAccountNumber + "] for Client with id: [" + sClientId
-//					+ "] removed from database.");
-//		}else {
-//			objLogger.debug(sMethod + "Record with client id: [" + sClientId + "] NOT deleted from database.");
-//			objCtx.status(ciStatusCodeSuccessNoContent);
-//			objCtx.json(csMsgAccountNotFoundForClient);
-//		}
+		objCtx.json(sMsg);
 
 	};
 
@@ -543,7 +524,7 @@ public class ClientController implements Controller, Constants {
 		// Get all accounts for client id of X with balances between 400 and 2000 (if
 		// client exists)
 		// 020.00 GET client accounts with VALID client id between a range
-		//http://localhost:3005/client_acct/1/accounts/2000/400
+		// http://localhost:3005/client_acct/1/accounts/2000/400
 		app.get("/client_acct/:" + csParamClientId + "/:" + csParamAccounts + "/:" + csParamAccountsLessThan + "/:"
 				+ csParamAccountsGreaterThan, getClientAccountsInRange);
 
@@ -553,7 +534,8 @@ public class ClientController implements Controller, Constants {
 		// * - `GET /clients/{client_id}/accounts/{account_id}`: Get account with id of
 		// Y belonging to client with id of
 		// * X (if client and account exist AND if account belongs to client)
-		// 025.00 GET client account with VALID client id and a VALID account number belonging to the client
+		// 025.00 GET client account with VALID client id and a VALID account number
+		// belonging to the client
 		// http://localhost:3005/client_acct/1/account/00002
 		app.get("/client_acct/:" + csParamClientId + "/:" + csParamAccount + "/:" + csParamAccountNumber,
 				getClientAccountByAccountNumber);
@@ -568,7 +550,8 @@ public class ClientController implements Controller, Constants {
 		// with id of X (if client exists)
 		// 005.00 POST client add an account
 		// /client_acct/client_id/account/account_type/account_balance
-		// http://localhost:3005/client_acct/5/account/Checking/10000.23 ==> generated number: [84073]
+		// http://localhost:3005/client_acct/5/account/Checking/10000.23 ==> generated
+		// number: [84073]
 		// generate a random number for account number
 		app.post("/client_acct/:" + csParamClientId + "/:" + csParamAccount // account number is system generated
 				+ "/:" + csParamAccountType // can set account type
@@ -577,7 +560,8 @@ public class ClientController implements Controller, Constants {
 
 		// - `PUT /clients/{id}`: Update client with an id of X (if the client exists)
 		// 000.00 PUT update client information
-		// http://localhost:3005/client/5/Michael/Biehn/John Connor Kyle Reese is your father
+		// http://localhost:3005/client/5/Michael/Biehn/John Connor Kyle Reese is your
+		// father
 		app.put("/client/:" + csParamClientId + "/:" + csClientTblFirstName + "/:" + csClientTblLastName + "/:"
 				+ csClientTblNickname, putUpdateClient);
 
@@ -609,7 +593,8 @@ public class ClientController implements Controller, Constants {
 		// of Y belonging to
 		// client with id of X (if client and account exist AND if account belongs to
 		// client)
-		// 005.00 DELETE /client: Delete VALID Account for VALID client id, where account belongs to client.
+		// 005.00 DELETE /client: Delete VALID Account for VALID client id, where
+		// account belongs to client.
 		// /client_acct/client_id/account/account number
 		// http://localhost:3005/client_acct/2/account/00014
 		app.delete("/client_acct/:" + csParamClientId // client id

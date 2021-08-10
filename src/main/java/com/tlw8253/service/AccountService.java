@@ -270,39 +270,23 @@ public class AccountService implements Constants {
 		String sMethod = "createNewAccountForClient(): ";
 		Account objNewAccount = new Account();
 
+		objLogger.trace(sMethod + "Entered.");
+
 		String sAccountType = objAccountAddDTO.getAccountType();
 		String sAccountBalance = objAccountAddDTO.getAccountBalance();
+
+		objLogger.debug(sMethod + "Parameters from DTO: [" + objAccountAddDTO.toString() + "]");
 
 		if ((csAccountTypeValueChecking.equalsIgnoreCase(sAccountType))
 				|| (csAccountTypeValueSavings.equalsIgnoreCase(sAccountType))) {
 
 			if (Validate.isDouble(sAccountBalance)) {
 
-				boolean bAccountExists = true;
-				String sAccountNumber = "";
-				do {
-					// get a random generated account number then check if it already exists
-					// an after thought, could store the last number inserted as account number
-					// in the database, then get it and increment.
-					int iAccountNumber = Utility.getRandomIntBetween(ciAccountNumMinVal, ciAccountNumMaxVal);
-					sAccountNumber = Integer.toString(iAccountNumber);
+				objLogger.debug(sMethod + "Parameters from DTO validated.  Calling method to generate account number.");
 
-					if (sAccountNumber.length() < ciAccountTblAccountNumberLen) {
-						sAccountNumber = Utility.padIntLeadingZero(iAccountNumber, ciAccountTblAccountNumberLen);
-					}
+				String sAccountNumber = generateAccountNumber();
 
-					try {
-						// check if account number already exists
-						bAccountExists = doesAccountExist(sAccountNumber);
-					} catch (Exception objE) {
-						// any kind of exception here is a problem, throw it to caller.
-						String sMsg = "Exception occurred while attempting to add account number: [" + sAccountNumber
-								+ "] for client id: [" + iClientId + "]";
-						objLogger.debug(sMethod + sMsg);
-						throw new DatabaseException(csMsgDB_ErrorAddingAccountForClient);
-					}
-
-				} while (bAccountExists);// while random generated account number is an account, try again
+				objLogger.debug(sMethod + "Account number generated: [" + sAccountNumber + "]");
 
 				// have account number not in database so use to add record.
 				objAccountAddDTO.setClientId(Integer.toString(iClientId)); // caller valided id is int
@@ -313,9 +297,12 @@ public class AccountService implements Constants {
 				// now add the record
 				objAccountAddDTO.setAccountBalance(Double.parseDouble(sAccountBalance)); // set double value
 
+				objLogger.debug(sMethod + "Updated objAccountAddDTO: [" + objAccountAddDTO.toString() + "]");
+
 				// Attempt adding a new account for the client
 				try {
 
+					objLogger.debug(sMethod + "Attempting to add account with number: [" + sAccountNumber + "]");
 					// Client objAddedClient = objClientDAO.addClient(objAddClientDTO);
 					objNewAccount = objAccountDAO.addRecord(objAccountAddDTO);
 					objLogger.debug(sMethod + "Account object created: [" + objNewAccount.toString() + "]");
@@ -343,6 +330,53 @@ public class AccountService implements Constants {
 
 		objLogger.debug(sMethod + "objNewAccount: [" + objNewAccount.toString() + "]");
 		return objNewAccount;
+	}
+
+	//
+	// ###
+	private String generateAccountNumber() throws DatabaseException {
+		String sMethod = "generateAccountNumber";
+		boolean bAccountExists = true;
+		String sAccountNumber = "";
+
+		objLogger.trace(sMethod + "Entered.");
+
+		do {
+			// get a random generated account number then check if it already exists
+			// an after thought, could store the last number inserted as account number
+			// in the database, then get it and increment.
+			int iAccountNumber = Utility.getRandomIntBetween(ciAccountNumMinVal, ciAccountNumMaxVal);
+			sAccountNumber = Integer.toString(iAccountNumber);
+
+			objLogger.debug(sMethod + "Account number generated: [" + sAccountNumber + "]");
+
+			if (sAccountNumber.length() < ciAccountTblAccountNumberLen) {
+				sAccountNumber = Utility.padIntLeadingZero(iAccountNumber, ciAccountTblAccountNumberLen);
+			}
+
+			try {
+				objLogger.debug(sMethod + "checking if account number: [" + sAccountNumber + "] already exists.");
+				// check if account number already exists
+				bAccountExists = doesAccountExist(sAccountNumber);
+				objLogger.debug(sMethod + "results if account number: [" + sAccountNumber + "] exists: ["
+						+ bAccountExists + "]");
+
+			} catch (AccountNotFoundException objE) {
+				objLogger.debug(sMethod + "caught AccountNotFoundException: [" + objE + "] returning account number: ["
+						+ sAccountNumber + "]");
+				bAccountExists = false;
+				return (sAccountNumber);
+
+			} catch (DatabaseException objE) {
+				// any kind of exception here is a problem, throw it to caller.
+				String sMsg = "Exception occurred while generating an account number";
+				objLogger.debug(sMethod + sMsg);
+				throw new DatabaseException(csMsgDB_ErrorAddingAccountForClient);
+			}
+
+		} while (bAccountExists);// while random generated account number is an account, try again
+
+		return sAccountNumber;
 	}
 
 	//
@@ -427,7 +461,8 @@ public class AccountService implements Constants {
 								+ iClientId + "]");
 
 						try {
-							objLogger.trace(sMethod + "calling: deleteAccountForClient(" + iClientId + "," + sAccountNumber + ")");
+							objLogger.trace(sMethod + "calling: deleteAccountForClient(" + iClientId + ","
+									+ sAccountNumber + ")");
 							deleteAccountForClient(iClientId, sAccountNumber);
 						} catch (AccountNotFoundException objE) {
 							objLogger.debug(sMethod + "Record not not found for delete account number: ["
@@ -467,60 +502,54 @@ public class AccountService implements Constants {
 	// Get the account by account number to see if it exist
 	// If account exists then check if it belongs to this client id
 	// If it is this clients account, then delete it
-	//public boolean deleteAccountForClient(int iClientId, String sAccountNumber)
-	public void deleteAccountForClient(int iClientId, String sAccountNumber)
+	// public boolean deleteAccountForClient(int iClientId, String sAccountNumber)
+	public int deleteAccountForClient(int iClientId, String sAccountNumber)
 			throws DatabaseException, AccountNotFoundException, BadParameterException {
 		String sMethod = "deleteAccountForClient(int,String): ";
-		boolean bRecordDeleted = false;
+		int iStatusCode = ciDelAcctSuccess;
 
 		objLogger.trace(sMethod + "Entered.");
 
 		try {
 			objLogger.debug(sMethod + "Checking if account number: [" + sAccountNumber + "] exists.");
-
-			if (doesAccountExist(sAccountNumber)) {
+			// see if there is an account with this number
+			boolean bAccountExists = doesAccountExist(sAccountNumber);
+			if (bAccountExists) {
 				objLogger.debug(sMethod + "Account number: [" + sAccountNumber + "] does exists.");
+				// now get the client to see if the account is theirs
 
 				// called method will validate the account number no need to validate it here
+				objLogger.debug(sMethod + "Gettin Account object with number: [" + sAccountNumber + "]");
 				Account objAccount = getAccountByAccountNumber(sAccountNumber);
-				objLogger.debug(sMethod + "Account number: [" + sAccountNumber + "] does exists.");
+				objLogger.debug(sMethod + "Account object from get call: [" + objAccount.toString() + "]");
 
 				int iClientIdForAccount = objAccount.getClientId();
 				if (iClientIdForAccount == iClientId) {
 					// now we can delete this account
 					objAccountDAO.deleteRecord(sAccountNumber);
-					bRecordDeleted = true; // if a return from DAO with no exceptions, then we deleted the record
+					iStatusCode = ciDelAcctSuccess; // if a return from DAO with no exceptions, then we deleted the record
 
 				} else {
 					String sMsg = "Account with account number: [" + sAccountNumber
 							+ "] does not belong to client id: [" + iClientId + "].";
 					objLogger.debug(sMethod + sMsg);
-					throw new AccountNotFoundException(csMsgAcctDoesNotBelongToClient);
+					iStatusCode = ciDelAccountNotClients;
 				}
-			}else {
-				String sMsg = "Account with account number: [" + sAccountNumber
-						+ "] not found in database.";
-				objLogger.debug(sMethod + sMsg);
-				throw new AccountNotFoundException(csMsgAccountNotFound);
 			}
-
 		} catch (AccountNotFoundException objE) {
-			String sMsg = "Account with account number: [" + sAccountNumber
-					+ "] not found in database for delete processing.";
-			objLogger.debug(sMethod + sMsg);
-			throw new AccountNotFoundException(csMsgAccountNotFoundForClient);
+			objLogger.debug(sMethod + "Account number: [" + sAccountNumber + "] not found in the database.");
+			//record was not deleted but does not matter since it is gone.
+			return ciDelAcctRecordNotFound;
+		} catch (DatabaseException objE) {
+			objLogger.debug(sMethod + "DatabaseException: [" + objE.toString() + "]");
+			return ciDelDB_Error;
 		} catch (SQLException objE) {
-			String sMsg = "Database error while deleteing account number: [" + sAccountNumber
-					+ "] belonging to client id: [" + iClientId + "].";
-			objLogger.debug(sMethod + sMsg);
-			throw new DatabaseException(csMsgDB_ErrorDeletingAccountForClient);
-		} catch (Exception objE) {
-			objLogger.debug(sMethod + "Exception: [" +objE.getMessage() + "]");
-			throw new DatabaseException(csMsgDB_ErrorDeletingAccountForClient);
+		objLogger.debug(sMethod + "DatabaseException: [" + objE.toString() + "]");
+		return ciDelDB_Error;
+	}
 
-		}
+		return iStatusCode;
 
-		//return bRecordDeleted;
 	}
 
 	//
@@ -531,12 +560,12 @@ public class AccountService implements Constants {
 
 		objLogger.trace(sMethod + "Entered.");
 		try {
-			objLogger.trace(sMethod + "calling: objAccountDAO.doesAccountExist("+sAccountNumber+")");
+			objLogger.trace(sMethod + "calling: objAccountDAO.doesAccountExist(" + sAccountNumber + ")");
 			bAcctExists = objAccountDAO.doesAccountExist(sAccountNumber);
-			objLogger.debug(sMethod + "account with account number: ["+ sAccountNumber + "] does exists.");
+			objLogger.debug(sMethod + "Account with account number: [" + sAccountNumber + "] DOES exists.");
 			bAcctExists = true;
 		} catch (AccountNotFoundException objE) {
-			String sMsg = "Account with number:["+sAccountNumber+"] does not exist.";
+			String sMsg = "Account with number:[" + sAccountNumber + "] does NOT exist.";
 			objLogger.debug(sMethod + sMsg);
 			throw new AccountNotFoundException(sMsg);
 		}
