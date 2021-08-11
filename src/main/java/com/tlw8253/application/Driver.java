@@ -141,8 +141,8 @@ public class Driver implements Constants {
 		String sMethod = "testAccountDAOImplAddRecord(): ";
 		AccountDAOImpl objAccountDAOImpl = new AccountDAOImpl();
 		AccountAddDTO objAccountAddDTO = new AccountAddDTO("80000", csAccountTypeValueSavings, "1158.21", "4");
-		objAccountAddDTO.setAccountBalance(1158.21);
-		objAccountAddDTO.setClientId(4);
+		objAccountAddDTO.setAccountBalanceAsDouble(1158.21);
+		objAccountAddDTO.setClientIdAsInt(4);
 
 		try {
 			Account objAccounts = objAccountDAOImpl.addRecord(objAccountAddDTO);
@@ -207,7 +207,7 @@ public class Driver implements Constants {
 			String sMsg = sMethod + "Deleting client with id of: [" + sClientId + "]";
 			objLogger.debug(sMsg);
 
-			objClientService.deleteClient(sClientId);
+			objClientService.deleteClientById(sClientId);
 
 			sMsg = sMethod + "Checking if client with id of: [" + sClientId + "] still exists.";
 			objLogger.debug(sMsg);

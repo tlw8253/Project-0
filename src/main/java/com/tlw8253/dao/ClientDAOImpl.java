@@ -224,23 +224,40 @@ public class ClientDAOImpl implements Constants, ClientDAO {
 	//
 	// ###
 	@Override
-	public boolean deleteClient(int iClientId) throws SQLException {
+	public boolean deleteClientById(int iClientId) throws SQLException {
 		String sMethod = "deleteClient(): ";
 		objLogger.trace(sMethod + "Entered");
 		boolean bClientDeleted = false;
 
 		try (Connection conConnection = ConnectionUtility.getConnection()) {
-
-			String sSQL = "DELETE FROM " + csClientTable + " WHERE " + csClientTblClientId + " = ?";
-
-			objLogger.debug(sMethod + "sSQL statement: [" + sSQL + "]");
-
-			PreparedStatement objPreparedStatmnt = conConnection.prepareStatement(sSQL);
-			objLogger.debug(sMethod + "objPreparedStatmnt: [" + objPreparedStatmnt.toString() + "]");
-
+			//do not allow autocommit until both the accounts and client are deleted
+			//this will provide auto rollback if accounts fail to delete.
+			conConnection.setAutoCommit(false);			
+			
+			//first delete the accounts due to the foreign key constraint
+			String sDelAcctSQL = "DELETE FROM " + csAccountTable + " WHERE " + csAccountTblClientId + " = ?";
+			objLogger.debug(sMethod + "sDelClientSQL statement: [" + sDelAcctSQL + "]");
+			PreparedStatement objPreparedStatmnt = conConnection.prepareStatement(sDelAcctSQL);
 			objPreparedStatmnt.setInt(1, iClientId);
-
+			objLogger.debug(sMethod + "objPreparedStatmnt: [" + objPreparedStatmnt.toString() + "]");
+			
 			int iRecssDeleted = objPreparedStatmnt.executeUpdate();
+			objLogger.debug(sMethod + "objPreparedStatmnt iRecssDeleted: [" + iRecssDeleted + "]");
+			if (iRecssDeleted < 1) {//multiple records can be deleted so as long as at least 1 was delete we are good
+				String sMsg = sMethod + "Error deleting client's account record(s) for client id: [" + iClientId + "]";
+				objLogger.warn(sMsg);
+				throw new SQLException(csMsgDB_ErrorDeletingAccountForClient);
+			}		
+			
+			
+			//Now we can delete the client after the accounts have been deleted
+			String sDelClientSQL = "DELETE FROM " + csClientTable + " WHERE " + csClientTblClientId + " = ?";
+			objLogger.debug(sMethod + "sDelClientSQL statement: [" + sDelClientSQL + "]");
+			objPreparedStatmnt = conConnection.prepareStatement(sDelClientSQL);
+			objPreparedStatmnt.setInt(1, iClientId);
+			objLogger.debug(sMethod + "objPreparedStatmnt: [" + objPreparedStatmnt.toString() + "]");
+			
+			iRecssDeleted = objPreparedStatmnt.executeUpdate();
 
 			// if it is not 1, we know that no records were actually deleted
 			if (iRecssDeleted != 1) {
@@ -249,6 +266,7 @@ public class ClientDAOImpl implements Constants, ClientDAO {
 				throw new SQLException(sMsg);
 			}
 			bClientDeleted=true;
+			conConnection.commit();  //now we can commit the transaction
 		}
 		return bClientDeleted;
 	}

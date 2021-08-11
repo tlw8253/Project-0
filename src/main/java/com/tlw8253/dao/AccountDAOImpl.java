@@ -110,6 +110,9 @@ public class AccountDAOImpl implements GenericDAO<Account>, Constants {
 			 * csAccountTblAccountBalance + " <= " + iUpperRange + " ORDER BY " +
 			 * csAccountTblAccountBalance;
 			 */
+			
+			//SELECT * FROM project0.account WHERE client_id = 1 AND acct_balance >= 400.00 
+			//AND acct_balance <= 2000.00 ORDER BY acct_balance;
 
 			String sSQL2 = "SELECT * FROM " + csAccountTable + " WHERE " + csClientTblClientId + " = ? " + " AND "
 					+ csAccountTblAccountBalance + " >= ? " + " AND " + csAccountTblAccountBalance + " <= ? "

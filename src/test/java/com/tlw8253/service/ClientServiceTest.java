@@ -339,8 +339,8 @@ public class ClientServiceTest implements Constants {
 		Client objClient_5 = new Client(5, "Michael", "Biehn", "Kyle Reese 2");	
 		when(objMockClientDAO.getClientById(eq(5))).thenReturn(objClient_5);		
 		
-		when(objMockClientDAO.deleteClient(eq(5))).thenReturn(true);
-		boolean bRet = objMockClientDAO.deleteClient(5);
+		when(objMockClientDAO.deleteClientById(eq(5))).thenReturn(true);
+		boolean bRet = objMockClientDAO.deleteClientById(5);
 				
 		assertEquals(bRet, true);
 		
@@ -357,7 +357,7 @@ public class ClientServiceTest implements Constants {
 		
 		//not an integer for the client id
 		try {
-			objMockClientService.deleteClient("Not an int");
+			objMockClientService.deleteClientById("Not an int");
 
 			fail();
 
@@ -375,7 +375,7 @@ public class ClientServiceTest implements Constants {
 		//client not found
 		try {
 			
-			objMockClientService.deleteClient("9999");
+			objMockClientService.deleteClientById("9999");
 
 			fail();
 
@@ -393,10 +393,10 @@ public class ClientServiceTest implements Constants {
 		Client objClient_5 = new Client(5, "Michael", "Biehn", "Kyle Reese"); //existing record in mock data
 		
 		when(objMockClientDAO.getClientById(eq(5))).thenReturn(objClient_5);		
-		when(objMockClientDAO.deleteClient(5)).thenThrow(SQLException.class);
+		when(objMockClientDAO.deleteClientById(5)).thenThrow(SQLException.class);
 
 		try {
-			objMockClientService.deleteClient("5");
+			objMockClientService.deleteClientById("5");
 
 			fail();
 

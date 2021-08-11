@@ -27,6 +27,6 @@ public interface ClientDAO {
 	
 	public abstract Client editClient(int iClientId, AddOrEditClientDTO objClient) throws SQLException;
 	
-	public abstract boolean deleteClient(int iClientId) throws SQLException;
+	public abstract boolean deleteClientById(int iClientId) throws SQLException;
 
 }

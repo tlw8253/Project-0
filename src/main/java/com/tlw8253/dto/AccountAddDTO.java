@@ -1,5 +1,7 @@
 package com.tlw8253.dto;
 
+import java.util.Objects;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -8,7 +10,6 @@ import com.tlw8253.application.Constants;
 public class AccountAddDTO extends AddDTO implements Constants {
 	private Logger objLogger = LoggerFactory.getLogger(AccountAddDTO.class);
 
-	
 	public AccountAddDTO() {
 		super();
 	}
@@ -32,7 +33,7 @@ public class AccountAddDTO extends AddDTO implements Constants {
 	//Account number is stored as a string in the database.
 	//	Only provide a String setter
 	public void setAccountNumber(String sAccountNumber) {
-		super.setDataElement(csAccountTblAccountNumber, sAccountNumber);		
+		super.setDataElement(csAccountTblAccountNumber, sAccountNumber);
 	}
 	public String getAccountNumber() {
 		return super.getDataElement(csAccountTblAccountNumber);		
@@ -41,7 +42,6 @@ public class AccountAddDTO extends AddDTO implements Constants {
 	//Account type is stored as a string in the database.
 	//	Only provide a String setter
 	public void setAccountType(String sAccountType) {
-		sAccountType = sAccountType.toUpperCase();
 		super.setDataElement(csAccountTblAccountType, sAccountType);		
 	}
 	public String getAccountType() {
@@ -53,8 +53,12 @@ public class AccountAddDTO extends AddDTO implements Constants {
 	public void setAccountBalance(String sAccountBalance) {
 		super.setDataElement(csAccountTblAccountBalance, sAccountBalance);		
 	}
-	public void setAccountBalance(double dAccountBalance) {
+	//I would prefer to overload the set method however the objCtx.bodyAsClass(AccountAddDTO.class);
+	//  is using the set using double parameter instead of string like I thought it would
+	public void setAccountBalanceAsDouble(double dAccountBalance) {
 		super.setDataElement(csAccountTblAccountBalance, dAccountBalance);		
+		
+		System.out.println("setAccountBalance(double): [" + dAccountBalance + "]");
 	}
 
 	public String getAccountBalance() {
@@ -69,7 +73,10 @@ public class AccountAddDTO extends AddDTO implements Constants {
 	public void setClientId(String sClientId) {
 		super.setDataElement(csClientTblClientId, sClientId);
 	}
-	public void setClientId(int iClientId) {
+	
+	//I would prefer to overload the set method however the objCtx.bodyAsClass(AccountAddDTO.class);
+	//  is using the set using int parameter instead of string like I thought it would
+	public void setClientIdAsInt(int iClientId) {
 		super.setDataElement(csClientTblClientId, iClientId);
 	}
 
@@ -82,7 +89,8 @@ public class AccountAddDTO extends AddDTO implements Constants {
 	}
 
 	
-	@Override
+	
+	//
 	public String toString() {
 		String sMethod = "toString(): ";
 		String sToString = "";
@@ -94,4 +102,7 @@ public class AccountAddDTO extends AddDTO implements Constants {
 		//return super.toString();
 	}
 
+
+	
+	
 }

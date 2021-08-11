@@ -290,12 +290,12 @@ public class AccountService implements Constants {
 
 				// have account number not in database so use to add record.
 				objAccountAddDTO.setClientId(Integer.toString(iClientId)); // caller valided id is int
-				objAccountAddDTO.setClientId(iClientId); // set client id as int
+				objAccountAddDTO.setClientIdAsInt(iClientId); // set client id as int
 				objAccountAddDTO.setAccountNumber(sAccountNumber); // validated to be new account number
 				objAccountAddDTO.setAccountType(sAccountType);
 				objAccountAddDTO.setAccountBalance(sAccountBalance); // already validated to be a double
 				// now add the record
-				objAccountAddDTO.setAccountBalance(Double.parseDouble(sAccountBalance)); // set double value
+				objAccountAddDTO.setAccountBalanceAsDouble(Double.parseDouble(sAccountBalance)); // set double value
 
 				objLogger.debug(sMethod + "Updated objAccountAddDTO: [" + objAccountAddDTO.toString() + "]");
 

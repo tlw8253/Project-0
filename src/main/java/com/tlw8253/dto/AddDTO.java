@@ -1,6 +1,7 @@
 package com.tlw8253.dto;
 
 import java.util.HashMap;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 import java.lang.Integer;
@@ -93,6 +94,28 @@ public class AddDTO {
 		return treeSetKeys;
 	}
 
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(hmDoubleDataElements, hmIntegerDataElements, hmStringDataElements);
+	}
+
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		AddDTO other = (AddDTO) obj;
+		return Objects.equals(hmDoubleDataElements, other.hmDoubleDataElements)
+				&& Objects.equals(hmIntegerDataElements, other.hmIntegerDataElements)
+				&& Objects.equals(hmStringDataElements, other.hmStringDataElements);
+	}
+
+	
 	
 	
 }

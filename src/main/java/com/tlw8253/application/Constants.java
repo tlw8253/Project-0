@@ -56,6 +56,7 @@ public interface Constants {
 	int ciAccountTblAccountNumberLen = 5;
 	String csAccountTblAccountType = "acct_type";
 	String csAccountTblAccountBalance = "acct_balance";
+	String csAccountTblClientId = csClientTblClientId;
 	String csAccountTypeValueChecking = "CHECKING";
 	String csAccountTypeValueSavings = "SAVINGS";
 	int ciAccountNumMinVal = 1;
@@ -83,7 +84,7 @@ public interface Constants {
 	String csMsgDB_ErrorUpdatingClient = "Database error when updating client information.";
 	String csMsgDB_ErrorDeletingClient = "Database error when deleting client information.";
 	String csMsgDB_ErrorAddingAccountForClient = "Database error while adding a new account for a client.";
-	String csMsgDB_ErrorDeletingAccountForClient = "Database error while deleteing a client's account.";
+	String csMsgDB_ErrorDeletingAccountForClient = "Database error while deleteing client's account.";
 	String csMsgDB_ErrorUpdatingAccountForClient = "Database error while updating an existing account for a client.";
 	String csMsgDB_ErrorGettingAccount = "Database error while getting an account.";
 	

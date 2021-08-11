@@ -41,6 +41,7 @@
 	
 	<logger name="io.javalin.Javalin" level="INFO" />
 	
+	
 
 	<!-- Here I configure my Logger itself. 
 	By default, logback makes use of what is known as the root logger, so that is the one we will make use of.
