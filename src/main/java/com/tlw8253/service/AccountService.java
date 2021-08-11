@@ -1,6 +1,7 @@
 package com.tlw8253.service;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -135,7 +136,7 @@ public class AccountService implements Constants {
 			int iClientId = Integer.parseInt(sClientId);
 
 			try {
-				lstAccounts = getAccountsForClient(iClientId);
+				lstAccounts = getAccountsForClient(iClientId, false);
 				return (lstAccounts);
 			} catch (AccountNotFoundException objE) {
 				objLogger.debug(sMethod + "No accounts found for client id: [" + sClientId + "]");
@@ -151,9 +152,9 @@ public class AccountService implements Constants {
 
 	//
 	// ###
-	public List<Account> getAccountsForClient(int iClientId) throws DatabaseException, AccountNotFoundException {
+	public List<Account> getAccountsForClient(int iClientId, boolean bIgnoreRNF) throws DatabaseException, AccountNotFoundException {
 		String sMethod = "getAccountsForClient(int): ";
-		List<Account> lstAccounts;
+		List<Account> lstAccounts = new ArrayList<Account>();
 
 		objLogger.trace(sMethod + "Entered.");
 
@@ -172,7 +173,9 @@ public class AccountService implements Constants {
 		} catch (SQLException objE) {
 			String sMsg = "Error with database getting all accounts for client id: [" + iClientId + "].";
 			objLogger.warn(sMethod + sMsg);
-			throw new DatabaseException(csMsgAccountsNotFoundForClient);
+			if (!bIgnoreRNF) { //if set then do not throw the exception.
+				throw new DatabaseException(csMsgAccountsNotFoundForClient);
+			}
 		}
 		return (lstAccounts);
 

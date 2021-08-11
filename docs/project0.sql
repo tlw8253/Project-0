@@ -33,9 +33,6 @@ VALUES
 -- ('William', 'Wisher Jr.', 'Policeman #1'),
 ('Robert', 'Patrick', 'T-1000');
 
-SELECT * FROM client;
-SELECT * FROM project0.client;
-
 CREATE TABLE account( -- bring back auto increment to use as bases for account number
 					  -- if there was time, could have save last account number in a file and 
 					  -- increment for next key, could consider using return (int) ((Math.random() * (max - min)) + min); for now
@@ -59,20 +56,6 @@ VALUES
 ('00004', 'CHECKING', 2500.25, 3),
 ('00005', 'CHECKING', 10000.36, 4);
 
--- INSERT INTO account (acct_number, acct_type, acct_balance, client_id)
--- VALUES 
--- (12345, 'CHECKING', 10000.00, 1);
-
-
-SELECT * FROM account;
-SELECT * FROM account WHERE client_id = 4 ORDER BY acct_number;
-SELECT * FROM account WHERE acct_number = '34567';
-SELECT * FROM project0.account WHERE acct_number = 34567;
-
-DELETE FROM project0.account WHERE acct_number = 80000;
-DELETE FROM project0.account WHERE acct_number = 80001;
-SELECT * FROM project0.account WHERE client_id = 4;
-
 -- requirement data load <= 2000 && >= 400
 INSERT INTO account (acct_number, acct_type, acct_balance, client_id)
 VALUES 
@@ -87,8 +70,21 @@ VALUES
 -- requirement data load to delete an account for a client
 INSERT INTO account (acct_number, acct_type, acct_balance, client_id)
 VALUES 
--- ('00013', 'SAVINGS', 20000.00, 2),
+('00013', 'SAVINGS', 20000.00, 2),
 ('00014', 'SAVINGS', 20000.01, 2);
+
+ SELECT * FROM client;
+ SELECT * FROM project0.client;
+
+SELECT * FROM account;
+SELECT * FROM account WHERE client_id = 5 ORDER BY acct_number;
+SELECT * FROM account WHERE acct_number = '34567';
+SELECT * FROM project0.account WHERE acct_number = 34567;
+
+DELETE FROM project0.account WHERE acct_number = 80000;
+DELETE FROM project0.account WHERE acct_number = 80001;
+SELECT * FROM project0.account WHERE client_id = 4;
+
 
 SELECT * FROM project0.account WHERE client_id = 1 AND acct_balance >= 400.00 ORDER BY acct_balance;
 SELECT * FROM project0.account WHERE client_id = 1 AND acct_balance <= 2000.00 ORDER BY acct_balance;
@@ -99,7 +95,7 @@ SELECT * FROM project0.account WHERE client_id = 1 AND acct_balance >= 400 AND a
 UPDATE client SET client_first_name = 'Robert', client_last_name = 'Patrick', client_nickname = 'T-1000' WHERE client_id = 4;
 SELECT * FROM client;
 SELECT * FROM account;
-SELECT * FROM account WHERE client_id = 6 ORDER BY acct_number;
+SELECT * FROM account WHERE client_id = 1 ORDER BY acct_number;
 
 SELECT * FROM project0.account WHERE client_id = 1  AND acct_balance >= 5  AND acct_balance <= 20  ORDER BY acct_balance
 
@@ -107,6 +103,6 @@ SELECT * FROM project0.account WHERE client_id = 1  AND acct_balance >= 5  AND a
 -- futrue consideration CREATE TABLE account_history table to record account transactions
 
 
-
+DELETE FROM project0.client WHERE client_id = 1;
 
 

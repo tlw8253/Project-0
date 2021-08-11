@@ -22,33 +22,46 @@ import io.javalin.http.Handler;
  * From Project-0 requirements these are the expected requests and responses
  * (endpoints):
  * 
- * * 20210807 - both POST requests initially implemented * -(COMPLETED) `POST
- * /clients`: Creates a new client -(COMPLETED) `POST
- * /clients/{client_id}/accounts`: Create a new account for a client with id of
+ * * 20210807 - both POST requests initially implemented * -
+ * 
+ * (COMPLETED) `POST /clients`: Creates a new client -
+ * 
+ * (COMPLETED) `POST /clients/{client_id}/accounts`: Create a new account for a client with id of
  * X (if client exists)
  * 
- * 20210807 - both PUT requests initially implemented - (COMPLETED) `PUT
- * /clients/{id}`: Update client with an id of X (if the client exists) -
+ * 20210807 - both PUT requests initially implemented - 
+ * 
+ * (COMPLETED) `PUT  /clients/{id}`: Update client with an id of X (if the client exists) -
+ * 
  * (COMPLETED) `PUT /clients/{client_id}/accounts/{account_id}`: Update account
  * with id of Y belonging to client with id of X (if client and account exist
  * AND if account belongs to client)
  * 
- * 20210808 - both DELETE requests initially implemented - (COMPLETED) `DELETE
- * /clients/{id}`: Delete client with an id of X (if the client exists) -
+ * 20210808 - both DELETE requests initially implemented - 
+ * 
+ * (COMPLETED) `DELETE /clients/{id}`: Delete client with an id of X (if the client exists) -
+ * 
  * (COMPLETED) `DELETE /clients/{client_id}/accounts/{account_id}`: Delete
  * account with id of Y belonging to client with id of X (if client and account
  * exist AND if account belongs to client)
  * 
- * 20210806 - all GETs initially implemented -(COMPLETED) `GET /clients`: Gets
- * all clients -(COMPLETED) `GET /clients/{id}`: Get client with an id of X (if
- * the client exists) * -(COMPLETED) `GET /clients/{client_id}/accounts`: Get
- * all accounts for client with id of X (if client exists) * -(COMPLETED) `GET
- * /clients/{client_id}/accounts?amountLessThan=2000&amountGreaterThan=400`: Get
+ * 20210806 - all GETs initially implemented -
+ * 
+ * (COMPLETED) `GET /clients`: Gets all clients -
+ * 
+ * (COMPLETED) `GET /clients/{id}`: Get client with an id of X (if
+ * the client exists) * -
+ * 
+ * (COMPLETED) `GET /clients/{client_id}/accounts`: Get
+ * all accounts for client with id of X (if client exists) * -
+ * 
+ * (COMPLETED) `GET /clients/{client_id}/accounts?amountLessThan=2000&amountGreaterThan=400`: Get
  * all accounts for client id of X with balances between 400 and 2000 (if client
  * exists)
  * 
  * This requirement is not real clear. I believe they want to get a client's
  * account by account number, if and only if the account belongs to the client.
+ * 
  * - (COMPLETED) `GET /clients/{client_id}/accounts/{account_id}`: Get account
  * with id of Y belonging to client with id of X (if client and account exist
  * AND if account belongs to client)
@@ -96,7 +109,7 @@ public class ClientController implements Controller, Constants {
 
 		// get the accounts for each client
 		for (int iCtr = 0; iCtr < lstClients.size(); iCtr++) {
-			List<Account> lstAccounts = objAccountService.getAccountsForClient(lstClients.get(iCtr).getClientId());
+			List<Account> lstAccounts = objAccountService.getAccountsForClient(lstClients.get(iCtr).getClientId(), true);
 			lstClients.get(iCtr).setAccounts(lstAccounts);
 		}
 
@@ -116,7 +129,7 @@ public class ClientController implements Controller, Constants {
 
 		// get the accounts for each client
 		for (int iCtr = 0; iCtr < lstClients.size(); iCtr++) {
-			List<Account> lstAccounts = objAccountService.getAccountsForClient(lstClients.get(iCtr).getClientId());
+			List<Account> lstAccounts = objAccountService.getAccountsForClient(lstClients.get(iCtr).getClientId(),true);
 			lstClients.get(iCtr).setAccounts(lstAccounts);
 		}
 
@@ -179,7 +192,7 @@ public class ClientController implements Controller, Constants {
 			objLogger.debug(sMethod + "No parameters received, get all accounts for this client.");
 			// no qualifying get account parameters, get all accounts for this client
 			// use int method since we know client exists
-			List<Account> lstAccounts = objAccountService.getAccountsForClient(objClient.getClientId());
+			List<Account> lstAccounts = objAccountService.getAccountsForClient(objClient.getClientId(), false);
 			objLogger.debug(sMethod + "Client accounts from AccountSerice: [" + lstAccounts.toString() + "]");
 
 			objClient.setAccounts(lstAccounts); // add accounts in client for the json response
@@ -610,30 +623,38 @@ public class ClientController implements Controller, Constants {
 		 * on a client(s) and request for client accounts (client_acct).
 		 */
 
+		////////////////////////////////	GET REQUESTS	////////////////////////////////////////////
+
 		// `GET /clients`: Gets all clients ==> requirement did not specifically state
 		// to include accounts or not. I can see a use for just the Clients without
 		// their
 		// accounts so have one endpoint for just clients and another for with accounts.
 		// 000.00 GET Get all clients request VALID request /clients
 		// http://localhost:3005/clients
+		String sEndPoint = "app.get(\"/clients\", getAllClients);";
+		objLogger.debug(sMethod + sEndPoint);
 		app.get("/clients", getAllClients);
 
 		// `NOT an MVP item: GET /clients/accounts`: Gets all clients with their
 		// accounts
 		// 005.00 GET Get all clients with thier account information BYPASS
 		// http://localhost:3005/clients_accts
+		sEndPoint = "app.get(\"/clients_accts\", getAllClientsWithAccountsByPass);";
+		objLogger.debug(sMethod + sEndPoint);
 		app.get("/clients_accts", getAllClientsWithAccountsByPass); // first implementation
 
 		//
 		// 006.00 GET Gets all clients with their account information VALID request
 		// http://localhost:3005/clients/accounts
+		sEndPoint = "app.get(/clients/accounts\", getAllClientsWithAccounts));";
+		objLogger.debug(sMethod + sEndPoint);
 		app.get("/clients/accounts", getAllClientsWithAccounts); // per endpoint requirement
 
 		// - `GET /clients/{client_id}`: Get client with an id of X (if the client
 		// exists)
 		// 010.00 GET Get a client by VALID client id without accounts
 		// http://localhost:3005/clients/4
-		String sEndPoint = "app.get(\"/clients/:" + csParamClientId + "\", getClientById);";
+		sEndPoint = "app.get(\"/clients/:" + csParamClientId + "\", getClientById);";
 		objLogger.debug(sMethod + sEndPoint);
 
 		// app.get("/clients/:client_id", getClientById);
@@ -658,6 +679,7 @@ public class ClientController implements Controller, Constants {
 		// 021.00 GET Get client accounts with VALID client id between a VALID range
 		// http://localhost:3005/clients/1/accounts?acct_greater_than=400&acct_less_than=2000
 		//app.get("/clients/:client_id/:accounts", getClientAccounts);
+		sEndPoint = "app.get(\"/clients/:" + csParamClientId + "/:" + csParamAccounts +  "\", getClientAccounts);";
 		app.get("/clients/:" + csParamClientId + "/:" + csParamAccounts, getClientAccounts); // per endpoint requirement
 
 		// - `GET
@@ -692,24 +714,33 @@ public class ClientController implements Controller, Constants {
 		app.get("/clients/:" + csParamClientId + "/:" + csParamAccount + "/:" + csParamAccountNumber,
 				getClientAccountByAccountNumber); // per endpoint requirement
 
+		////////////////////////////////	POST REQUESTS	////////////////////////////////////////////
+		
 		// - `POST /clients`: Creates a new client
 		// http://localhost:3005/client/Michael/Biehn/Kyle Reese
-		sEndPoint = "app.post(\"/clients/:" + csClientTblFirstName + "/:" + csClientTblLastName + "/:"
-				+ csClientTblNickname + "\", postAddClient);";
+		sEndPoint = "app.post(\"/clients/:" + csParamClientFirstName + "/:" + csParamClientLastName + "/:"
+				+ csParamClientNickname + "\", postAddClient);";
 		objLogger.debug(sMethod + sEndPoint);
 
 		//000.00 POST Add new client all parameters VALID
 		// app.post("/client/:client_first_name/:client_last_name/:client_nickname,
 		// postAddClient);
-		app.post("/clients/:" + csClientTblFirstName + "/:" + csClientTblLastName + "/:" + csClientTblNickname,
+		app.post("/clients/:" + csParamClientFirstName + "/:" + csParamClientLastName + "/:" + csParamClientNickname,
 				postAddClient); // per endpoint requirement
 		
+
+		sEndPoint = "app.post(\"/clients/:" + csParamClientFirstName + "/:" + csParamClientLastName + "/:"
+				+ "\", postAddClient);";
+		objLogger.debug(sMethod + sEndPoint);
+
 		// 001.00 POST Add new client VALID first & last name but no optional nickname
 		// /clients/client_first_name/client_last_name
-		//Client nickname is optionial and is not identified if left blank in the parameter map so create new endpoint
-		app.post("/clients/:" + csClientTblFirstName + "/:" + csClientTblLastName, postAddClient); // per endpoint requirement
+		//Client nickname is optional and is not identified if left blank in the parameter map so create new endpoint
+		app.post("/clients/:" + csParamClientFirstName + "/:" + csParamClientLastName, postAddClient); // per endpoint requirement
 
 		// add.post add a client using body for greater security
+		sEndPoint = "app.post(app.post(\"/clients\", postAddClientByBody);";
+		objLogger.debug(sMethod + sEndPoint);
 		app.post("/clients", postAddClientByBody);
 
 		// - `POST /clients/{client_id}/accounts`: Create a new account for a client
@@ -719,33 +750,38 @@ public class ClientController implements Controller, Constants {
 		// http://localhost:3005/client_acct/5/account/Checking/10000.23 ==> generated
 		// number: [84073]
 		// generate a random number for account number
-		sEndPoint = "app.post(\"/client_acct/:" + csParamClientId + "/:" + csParamAccounts + "/:" + csParamAccountType
+		sEndPoint = "app.post(\"/clients/:" + csParamClientId + "/:" + csParamAccounts + "/:" + csParamAccountType
 				+ "/:" + csParamAccountBalance + "\", postAddClientAccount);";
 		objLogger.debug(sMethod + sEndPoint);
 
 		// app.post("/client_acct/:client_id/:accounts/:acct_type/:acct_balance",
 		// postAddClientAccount);
-		app.post("/client_acct/:" + csParamClientId + "/:" + csParamAccount // account number is system generated
+		app.post("/clients/:" + csParamClientId + "/:" + csParamAccount // account number is system generated
 				+ "/:" + csParamAccountType // can set account type
 				+ "/:" + csParamAccountBalance, // can create a balance
 				postAddClientAccount);
 
+		////////////////////////////////	PUT REQUESTS	////////////////////////////////////////////
+
+		
 		// add.post add an account for client using body for greater security
-		app.post("/client_acct", postAddClientAccountByBody);
+		sEndPoint = "app.put(\"/clients/:\" + csParamAccounts, postAddClientAccountByBody);";
+		app.post("/clients/:" + csParamAccounts, postAddClientAccountByBody);
 
 		// - `PUT /clients/{id}`: Update client with an id of X (if the client exists)
 		// 000.00 PUT update client information
 		// http://localhost:3005/client/5/Michael/Biehn/John Connor Kyle Reese is your
 		// father
-		sEndPoint = "app.put(\"/client/:" + csParamClientId + "/:" + csClientTblFirstName + "/:" + csClientTblLastName
-				+ "/:" + csClientTblNickname + "\", putUpdateClient);";
+		sEndPoint = "app.put(\"/clients/:" + csParamClientId + "/:" + csParamClientFirstName + "/:" + csParamClientLastName
+				+ "/:" + csParamClientNickname + ")\", putUpdateClient);";
 		objLogger.debug(sMethod + sEndPoint);
 
-		// app.get("/client/:client_id/:client_first_name/:client_last_name/:client_nickname",
+		// app.put("/client/:client_id/:client_first_name/:client_last_name/:client_nickname)",
 		// putUpdateClient);
-		app.put("/client/:" + csParamClientId + "/:" + csClientTblFirstName + "/:" + csClientTblLastName + "/:"
-				+ csClientTblNickname, putUpdateClient);
+		app.put("/client/:" + csParamClientId + "/:" + csParamClientFirstName + "/:" + csParamClientLastName + "/:"
+				+ csParamClientNickname, putUpdateClient);
 
+		
 		// There is a conflict with PUT to update a client and PUT to update a client
 		// account
 		// both signatures are the similar and update a client is called first.
@@ -757,24 +793,27 @@ public class ClientController implements Controller, Constants {
 		// 005.00 PUT Update an account for a given client
 		// /client_acct/client_id/account/account number/account balance
 		// http://localhost:3005/client_acct/5/account/84073/50655.23
-		sEndPoint = "app.put(\"/client_acct/:" + csParamClientId + "/:" + csParamAccount + "/:" + csParamAccountNumber
+		sEndPoint = "app.put(\"/clients/:" + csParamClientId + "/:" + csParamAccount + "/:" + csParamAccountNumber
 				+ "/:" + csParamAccountBalance + "\", putUpdateClientAccount);";
 		objLogger.debug(sMethod + sEndPoint);
 
 		// app.get("/client_acct/:client_id/:account/:acct_number/:acct_balance",
 		// putUpdateClientAccount);
-		app.put("/client_acct/:" + csParamClientId // cannot update client id
+		app.put("/clients/:" + csParamClientId // cannot update client id
 				+ "/:" + csParamAccount // identifies this is an account action
 				+ "/:" + csParamAccountNumber // cannot update account number or account type
 				+ "/:" + csParamAccountBalance, // can only update balance and really should be deposit or withdrawal
 												// for now will just implement changing the balance
 				putUpdateClientAccount);
 
+		////////////////////////////////	DELETE REQUESTS	////////////////////////////////////////////
+
 		// - `DELETE /clients/{id}`: Delete client with an id of X (if the client
 		// exists)
 		// 000.00 DELETE Delete client with VALID id with account (s)
 		// http://localhost:3005/client/5
-		app.delete("/client/:" + csParamClientId, deleteClientById);
+		sEndPoint = "app.get(\"/clients/:\" + csParamClientId, deleteClientById);";
+		app.delete("/clients/:" + csParamClientId, deleteClientById);
 
 		// - `DELETE /clients/{client_id}/accounts/{account_id}`: Delete account with id
 		// of Y belonging to
@@ -790,10 +829,10 @@ public class ClientController implements Controller, Constants {
 
 		// app.get("/client_acct/:client_id/:account/:acct_number",
 		// deleteAccountForClientId);
-		app.delete("/client_acct/:" + csParamClientId // client id
-				+ "/:" + csParamAccount // identifies this is an account action
-				+ "/:" + csParamAccountNumber, // account number to delete
-				deleteAccountForClientId);
+		app.delete("/clients/:" + csParamClientId // client id
+					+ "/:" + csParamAccount // identifies this is an account action
+					+ "/:" + csParamAccountNumber, // account number to delete
+					deleteAccountForClientId);
 
 	}
 
